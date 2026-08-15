@@ -1,0 +1,15 @@
+{{- /* Image resources as a lightbox-wired grid.
+       Params: images (resource slice), group (lightbox group key), caption */ -}}
+{{- $group := .group -}}
+{{- $caption := .caption -}}
+<div class="gallery-grid">
+  {{- range $n, $img := .images }}
+  {{- $full := $img.Resize "1600x webp q82" }}
+  {{- $thumb := $img.Fill "800x600 Center webp q80" }}
+  <a class="gallery-grid__item" href="{{ $full.RelPermalink }}"
+     data-lightbox="{{ $group }}" data-caption="{{ $caption }}">
+    <img src="{{ $thumb.RelPermalink }}" width="800" height="600"
+         alt="{{ $img.Params.alt | default "" }}" loading="lazy" decoding="async">
+  </a>
+  {{- end }}
+</div>

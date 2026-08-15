@@ -1,0 +1,44 @@
+{{ define "main" }}
+{{- $isEvents := eq .Section "sundmused" -}}
+{{- $pages := .RegularPages -}}
+
+<article class="page">
+  <header class="page__head">
+    <h1 class="page-title">{{ .Title }}</h1>
+    {{- with .Description }}<p class="page__lead">{{ . }}</p>{{ end }}
+    {{- with .Content }}<div class="prose band__body">{{ . }}</div>{{ end }}
+  </header>
+
+  {{- if not $pages }}
+  <p class="empty">{{ i18n "no_posts" }}</p>
+  {{- else if $isEvents }}
+    {{- /* Events read forwards, not backwards: soonest first, past folded
+           underneath. `now` is evaluated at build time — a nightly rebuild
+           keeps it honest, which is why the deploy runs on a schedule too. */ -}}
+    {{- $nowUnix := now.Unix }}
+    {{- $upcoming := slice }}{{ $past := slice }}
+    {{- range $pages }}
+      {{- $when := time.AsTime .Params.eventDate }}
+      {{- if ge $when.Unix $nowUnix }}
+        {{- $upcoming = $upcoming | append . }}
+      {{- else }}
+        {{- $past = $past | append . }}
+      {{- end }}
+    {{- end }}
+    {{- with $upcoming }}
+    <h2 class="band__title band__title--sub">{{ i18n "upcoming" }}</h2>
+    {{ partial "card-grid.html" (sort . "Params.eventDate" "asc") }}
+    {{- end }}
+    {{- with $past }}
+    <h2 class="band__title band__title--sub">{{ i18n "past_events" }}</h2>
+    {{ partial "card-grid.html" (sort . "Params.eventDate" "desc") }}
+    {{- end }}
+  {{- else }}
+    {{ partial "card-grid.html" $pages }}
+  {{- end }}
+
+  {{- with .OutputFormats.Get "rss" }}
+  <p class="page__feed"><a href="{{ .RelPermalink }}">RSS</a></p>
+  {{- end }}
+</article>
+{{ end }}

@@ -315,7 +315,12 @@ test.describe('responsive + a11y', () => {
     await page.goto('/');
     await expect(page.locator('.site-nav__toggle')).toBeHidden();
     await expect(page.locator('.site-nav__list')).toBeVisible();
-    await expect(page.locator('.site-nav__list li')).toHaveCount(6);
+    // 5 in-page anchors + booking, plus one per section that has content
+    await expect(page.locator('.site-nav__list li')).not.toHaveCount(0);
+    await expect(page.locator('.site-nav__book')).toBeVisible();
+    for (const id of ['ruumid', 'toitlustus', 'tegevused', 'partnerid', 'kontakt']) {
+      await expect(page.locator(`.site-nav__list a[href="#${id}"]`)).toHaveCount(1);
+    }
   });
 });
 

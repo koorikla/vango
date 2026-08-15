@@ -30,3 +30,37 @@ other = "Vaata Google Mapsis"
 
 [opens_new_window]
 other = "avaneb uues aknas"
+
+[read_more]
+other = "Loe edasi"
+
+[all_news]
+other = "Kõik uudised"
+
+[upcoming]
+other = "Tulemas"
+
+[past_events]
+other = "Möödunud"
+
+[no_posts]
+other = "Siin pole veel midagi. Varsti tuleb."
+
+[back_home]
+other = "Tagasi avalehele"
+
+[published]
+other = "Avaldatud"
+
+[event_when]
+other = "Millal"
+
+[event_where]
+other = "Kus"
+
+[photo_count]
+one = "{{ . }} pilt"
+other = "{{ . }} pilti"
+
+[latest_news]
+other = "Värsked uudised"

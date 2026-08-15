@@ -24,26 +24,59 @@
   --sheet-w:    1060px;
   --gutter:     clamp(1rem, 4vw, 2.5rem);
 
-  --font: "Lato", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font:         "Lato", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
 
-  --step-0: clamp(1rem, .96rem + .2vw, 1.0625rem);
-  --step-1: clamp(1.15rem, 1.08rem + .35vw, 1.35rem);
-  --step-2: clamp(1.35rem, 1.2rem + .7vw, 1.75rem);
+  /* Editorial scale. The old theme ran everything at 14–22px; the range here
+     is wider so section titles actually carry weight against the artwork. */
+  --step--1: clamp(.82rem, .8rem + .1vw, .875rem);
+  --step-0:  clamp(1.03rem, 1rem + .16vw, 1.125rem);
+  --step-1:  clamp(1.2rem, 1.12rem + .4vw, 1.45rem);
+  --step-2:  clamp(1.6rem, 1.4rem + 1vw, 2.25rem);
+  --step-3:  clamp(2.1rem, 1.7rem + 2vw, 3.4rem);
+
+  /* Vertical rhythm */
+  --space-s:  clamp(.75rem, .6rem + .6vw, 1.1rem);
+  --space-m:  clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
+  --space-l:  clamp(2.75rem, 2rem + 3.4vw, 5rem);
+  --space-xl: clamp(4rem, 2.8rem + 5.6vw, 8rem);
 
   --hero:   clamp(190px, 26vw, 260px);
   --radius: 14px;
   --ease:   cubic-bezier(.22, .61, .36, 1);
 }
 
-/* Self-hosted Lato — no third-party font request, no layout shift. */
+/* ============================================================
+   Fonts — self-hosted, no third-party request.
+   Lato (body) is the brand's existing face, kept for continuity.
+   Fraunces (display) is a variable serif whose SOFT/WONK axes give
+   headings the same hand-drawn warmth as the watercolour artwork.
+   Both SIL Open Font License 1.1. latin-ext carries õ ä ö ü š ž.
+   ============================================================ */
+{{ $latin := "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD" }}
+{{ $latinExt := "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF" }}
+
+{{ range slice
+     (dict "file" "fraunces" "family" "Fraunces" "weight" "400 700" "variable" true)
+     (dict "file" "lato-300" "family" "Lato"     "weight" "300")
+     (dict "file" "lato-400" "family" "Lato"     "weight" "400")
+     (dict "file" "lato-700" "family" "Lato"     "weight" "700") }}
+  {{- $f := . }}
+  {{- range slice (dict "sub" "latin" "range" $latin) (dict "sub" "latin-ext" "range" $latinExt) }}
+    {{- $sub := .sub }}{{ $ur := .range }}
+    {{- with resources.Get (printf "fonts/%s-%s.woff2" $f.file $sub) }}
 @font-face {
-  font-family: "Lato"; font-style: normal; font-weight: 300; font-display: swap;
-  src: local("Lato Light"), local("Lato-Light");
+  font-family: "{{ $f.family }}";
+  font-style: normal;
+  font-weight: {{ $f.weight }};
+  font-display: swap;
+  {{/* plain woff2 — the legacy "woff2-variations" token is rejected by current browsers */}}
+  src: url("{{ .RelPermalink }}") format("woff2");
+  unicode-range: {{ $ur }};
 }
-@font-face {
-  font-family: "Lato"; font-style: normal; font-weight: 400; font-display: swap;
-  src: local("Lato Regular"), local("Lato-Regular");
-}
+    {{- end }}
+  {{- end }}
+{{- end }}
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -106,11 +139,22 @@ a { color: inherit; }
   background: url("{{ $vinesUp }}") center top / 1400px auto repeat-y;
   opacity: .15;
 }
-/* The white reading sheet the content sits on. */
+/* The reading sheet the content sits on. Not flat white: a warm paper tint
+   plus a fine grain, so it reads as pressed paper laid over the painting
+   rather than a browser-default panel. The grain is one inline SVG turbulence
+   tile — no image request, no repeating-gradient moiré. */
 .backdrop__sheet {
   position: absolute; inset-block: 0; left: 50%; translate: -50% 0;
   width: min(var(--sheet-w), 100%);
-  background: var(--sheet);
+  background:
+    linear-gradient(180deg, rgb(255 253 250 / .97), rgb(253 250 246 / .94));
+  box-shadow: 0 0 60px rgb(120 70 40 / .07);
+}
+.backdrop__sheet::after {
+  content: ""; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  opacity: .28;
 }
 
 /* ============================================================
@@ -199,14 +243,38 @@ a { color: inherit; }
   margin: 0; padding: 0; list-style: none;
 }
 .site-nav__list a {
-  display: block; padding: .9rem clamp(.5rem, 1.2vw, .85rem);
+  display: block; padding: .75rem clamp(.4rem, 1vw, .75rem);
   color: var(--ink-strong); text-decoration: none;
-  text-transform: uppercase; letter-spacing: 1px;
-  font-size: clamp(.85rem, .78rem + .3vw, 1rem);
+  text-transform: uppercase; letter-spacing: .09em;
+  font-size: clamp(.78rem, .72rem + .25vw, .9rem);
   transition: opacity .3s var(--ease), color .3s var(--ease);
 }
 .site-nav__list a:hover { opacity: .62; }
-.site-nav__book { color: var(--accent) !important; }
+.site-nav__list [aria-current="page"] { color: var(--accent); }
+
+/* The one thing the site is actually for. A pill so that when the nav wraps,
+   the booking link reads as a deliberate call to action on its own line
+   rather than an orphaned menu item. */
+.site-nav__book {
+  color: #fff !important;
+  background: var(--accent);
+  border-radius: 999px;
+  padding: .55rem 1.5rem !important;
+  margin-left: .5rem;
+  box-shadow: 0 3px 12px rgb(244 90 76 / .3);
+  transition: background .25s var(--ease), translate .25s var(--ease), box-shadow .25s var(--ease);
+}
+.site-nav__book:hover {
+  opacity: 1; background: #e0483a;
+  translate: 0 -2px; box-shadow: 0 6px 18px rgb(244 90 76 / .4);
+}
+
+/* Second group: the sections that have their own pages. A hairline keeps
+   the nav from reading as one long undifferentiated row. */
+@media (min-width: 641px) {
+  .site-nav__page--first { border-left: 1px solid var(--rule); margin-left: .4rem; padding-left: .4rem; }
+}
+.site-nav__page a { color: var(--ink-soft); }
 
 /* ============================================================
    Page shell
@@ -219,16 +287,29 @@ main {
 
 .page-title,
 .band__title {
-  margin: 3.5rem 0 1.5rem;
+  margin: var(--space-xl) 0 var(--space-m);
   color: var(--heading);
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 40, "WONK" 1, "opsz" 96;
   font-size: var(--step-2);
-  font-weight: 300;
-  line-height: 1.3;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: .015em;
   text-align: center;
+  text-wrap: balance;
 }
-.page-title { margin-top: 1.5rem; }
+.page-title {
+  margin-top: var(--space-m);
+  font-size: var(--step-3);
+}
+/* A hairline rule that stops short of the text, so section titles read as
+   chapter openers rather than floating labels. */
+.band__title::after,
+.page-title::after {
+  content: ""; display: block;
+  width: 3.5rem; height: 2px; margin: var(--space-s) auto 0;
+  background: linear-gradient(90deg, transparent, var(--accent-2), transparent);
+}
 
 .prose { color: var(--ink-soft); }
 .prose p { margin: 0 0 1.1em; }
@@ -237,21 +318,26 @@ main {
 .prose a:hover { color: var(--ink-strong); }
 .prose .fact { font-weight: 400; color: var(--heading); }
 .prose h2, .prose h3 {
-  margin: 2rem 0 .6rem; color: var(--heading);
-  font-size: var(--step-1); font-weight: 400; letter-spacing: .01em;
+  margin: var(--space-m) 0 .5rem; color: var(--heading);
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 30, "opsz" 24;
+  font-size: var(--step-1); font-weight: 600; letter-spacing: .01em;
 }
 
 /* ============================================================
    Rooms
    ============================================================ */
-.rooms { display: grid; gap: clamp(2.5rem, 6vw, 4.5rem); margin-top: 1rem; }
+.rooms { display: grid; gap: var(--space-l); margin-top: var(--space-m); }
 
+/* Asymmetric composition: the text column overlaps the circle slightly and
+   sits off the vertical centre, so the page reads as a laid-out spread
+   rather than a stack of centred rows. */
 .room {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
   align-items: center;
-  gap: clamp(1.5rem, 4vw, 3rem);
-  scroll-margin-top: 2rem;
+  gap: var(--space-m);
+  scroll-margin-top: var(--space-m);
 }
 .room__media { grid-area: 1 / 1; }
 .room__text  { grid-area: 1 / 2; }
@@ -261,6 +347,41 @@ main {
 .room--flip { grid-template-columns: minmax(0, 1fr) max-content; }
 .room--flip .room__media { grid-area: 1 / 2; }
 .room--flip .room__text  { grid-area: 1 / 1; }
+
+@media (min-width: 861px) {
+  .room__text {
+    /* pull the text over the circle's edge, and nudge it off-axis */
+    margin-left: calc(var(--space-m) * -0.7);
+    padding-top: 1.25rem;
+    z-index: 4; position: relative;
+  }
+  .room--flip .room__text {
+    margin-left: 0; margin-right: calc(var(--space-m) * -0.7);
+    padding-top: 0; padding-bottom: 1.25rem;
+  }
+  /* Nudge each room away from its own image so the column of circles
+     zigzags. Keyed off the flip class, not nth-child — the section starts
+     with a visually-hidden heading, which throws child counting off. */
+  .room             { margin-right: calc(var(--space-m) * .5); }
+  .room--flip       { margin-right: 0; margin-left: calc(var(--space-m) * .5); }
+}
+
+/* One entrance: each room fades and lifts as it first comes into view.
+   `view-timeline` keeps it off the main thread and needs no JS; browsers
+   without support simply show the finished state. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .room, .card, .gallery-grid__item {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+  }
+}
+@keyframes rise {
+  from { opacity: 0; translate: 0 2rem; }
+  to   { opacity: 1; translate: 0 0; }
+}
 
 .room__media { display: grid; justify-items: center; gap: 1rem; }
 
@@ -342,8 +463,11 @@ main {
 /* --- room text --- */
 .room__text { min-width: 0; }
 .room__title {
-  display: inline; margin: 0 .55em 0 0;
-  color: #000; font-size: var(--step-1); font-weight: 400;
+  display: inline; margin: 0 .5em 0 0;
+  color: var(--ink-strong);
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 30, "WONK" 1, "opsz" 24;
+  font-size: var(--step-1); font-weight: 600;
 }
 .room__body { display: inline; }
 .room__body > p:first-child { display: inline; }
@@ -356,7 +480,7 @@ main {
 .band__body { max-width: 62ch; margin-inline: auto; }
 
 .gallery-grid {
-  display: grid; gap: clamp(.75rem, 2vw, 1.25rem); margin-top: 2rem;
+  display: grid; gap: clamp(.75rem, 2vw, 1.25rem); margin-top: var(--space-m);
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
 }
 .gallery-grid__item {
@@ -402,8 +526,10 @@ main {
   grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
 }
 .contact-col h3 {
-  margin: 0 0 .4rem; color: var(--heading);
-  font-size: var(--step-1); font-weight: 400;
+  margin: 0 0 .5rem; color: var(--heading);
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 30, "opsz" 20;
+  font-size: var(--step-1); font-weight: 600;
 }
 .contact-col .prose p { margin: 0; }
 
@@ -425,6 +551,91 @@ main {
   background: rgb(255 255 255 / .92); color: var(--ink-strong);
   font-size: .8rem; letter-spacing: .04em;
 }
+
+/* ============================================================
+   Inner pages: news, events, galleries
+   ============================================================ */
+.page { padding-bottom: var(--space-l); }
+.page__head { text-align: center; }
+.page__lead {
+  max-width: 46ch; margin: 0 auto; color: var(--ink-soft);
+  font-size: var(--step-1); line-height: 1.5; text-wrap: balance;
+}
+.band__title--sub { font-size: var(--step-1); margin-top: var(--space-l); }
+.empty { text-align: center; color: var(--ink-soft); padding: var(--space-l) 0; }
+
+.page__feed { text-align: center; margin-top: var(--space-l); }
+.page__feed a {
+  font-size: var(--step--1); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-soft); text-decoration: none;
+}
+.page__feed a:hover { color: var(--accent); }
+
+/* --- cards --- */
+.cards {
+  display: grid; gap: clamp(1rem, 2.5vw, 1.75rem); margin: var(--space-m) 0 0; padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+}
+.card__link {
+  display: grid; grid-template-rows: auto 1fr; height: 100%;
+  text-decoration: none; color: inherit;
+  background: rgb(255 255 255 / .55);
+  border-radius: var(--radius); overflow: hidden;
+  box-shadow: 0 2px 10px rgb(0 0 0 / .06);
+  transition: box-shadow .3s var(--ease), translate .3s var(--ease);
+}
+.card__link:hover { box-shadow: 0 12px 34px rgb(0 0 0 / .14); translate: 0 -3px; }
+
+.card__media { display: block; overflow: hidden; aspect-ratio: 3 / 2; background: var(--rule); }
+.card__media img { width: 100%; height: 100%; object-fit: cover; transition: scale .6s var(--ease); }
+.card__link:hover .card__media img { scale: 1.05; }
+.card__media-empty {
+  display: block; width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgb(245 166 35 / .18), rgb(244 90 76 / .14));
+}
+
+.card__body { display: grid; align-content: start; gap: .35rem; padding: var(--space-s); }
+.card__date, .card__meta {
+  font-size: var(--step--1); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.card__title {
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 30, "opsz" 20;
+  font-size: var(--step-1); font-weight: 600; line-height: 1.2;
+  color: var(--ink-strong); text-wrap: balance;
+}
+.card__link:hover .card__title { color: var(--accent); }
+.card__excerpt { color: var(--ink-soft); font-size: .95rem; line-height: 1.5; }
+
+.band__more { text-align: center; margin-top: var(--space-m); }
+.pill {
+  display: inline-block; padding: .6rem 1.4rem;
+  border: 1px solid var(--rule); border-radius: 999px;
+  color: var(--ink-strong); text-decoration: none;
+  font-size: var(--step--1); letter-spacing: .1em; text-transform: uppercase;
+  transition: background .25s var(--ease), border-color .25s var(--ease);
+}
+.pill:hover { background: #fff; border-color: var(--accent); color: var(--accent); }
+
+/* --- post --- */
+.post__back { margin: 0; }
+.post__back a {
+  font-size: var(--step--1); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-soft); text-decoration: none;
+}
+.post__back a:hover { color: var(--accent); }
+.post__date, .post__facts { color: var(--ink-soft); font-size: var(--step--1);
+  letter-spacing: .06em; text-transform: uppercase; }
+.post__facts {
+  display: flex; flex-wrap: wrap; gap: var(--space-m);
+  justify-content: center; margin: 0;
+}
+.post__facts dt { font-weight: 400; opacity: .7; }
+.post__facts dd { margin: 0; color: var(--ink-strong); }
+.post__body { max-width: 62ch; margin: var(--space-m) auto 0; }
+.post__body > :first-child { margin-top: 0; }
 
 /* ============================================================
    Footer + back-to-top

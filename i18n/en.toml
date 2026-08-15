@@ -30,3 +30,37 @@ other = "View on Google Maps"
 
 [opens_new_window]
 other = "opens in a new window"
+
+[read_more]
+other = "Read more"
+
+[all_news]
+other = "All news"
+
+[upcoming]
+other = "Upcoming"
+
+[past_events]
+other = "Past"
+
+[no_posts]
+other = "Nothing here yet. Soon."
+
+[back_home]
+other = "Back to the home page"
+
+[published]
+other = "Published"
+
+[event_when]
+other = "When"
+
+[event_where]
+other = "Where"
+
+[photo_count]
+one = "{{ . }} photo"
+other = "{{ . }} photos"
+
+[latest_news]
+other = "Latest news"

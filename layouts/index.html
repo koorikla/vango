@@ -139,6 +139,22 @@
   </ul>
 </section>
 
+{{- /* ============================ UUDISED =========================== */ -}}
+{{- /* Only appears once there is something to show, so the page never has an
+       empty section sitting on it. */ -}}
+{{- with site.GetPage "/uudised" }}
+{{- $latest := first 3 .RegularPages }}
+{{- with $latest }}
+<section id="uudised" class="band" aria-labelledby="uudised-h">
+  <h2 class="band__title" id="uudised-h">{{ i18n "latest_news" }}</h2>
+  {{ partial "card-grid.html" . }}
+  <p class="band__more">
+    <a class="pill" href="{{ (site.GetPage "/uudised").RelPermalink }}">{{ i18n "all_news" }} &rarr;</a>
+  </p>
+</section>
+{{- end }}
+{{- end }}
+
 {{- /* =========================== KONTAKT ============================ */ -}}
 <section id="kontakt" class="band band--contact" aria-labelledby="kontakt-h">
   <h2 class="band__title" id="kontakt-h">{{ $d.kontakt.title }}</h2>

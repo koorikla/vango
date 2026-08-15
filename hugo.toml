@@ -3,7 +3,7 @@ defaultContentLanguage = "et"
 defaultContentLanguageInSubdir = false
 enableRobotsTXT = true
 # no theme: layouts live in this repo, so there is nothing extra to keep upgraded
-disableKinds = ["taxonomy", "term", "RSS"]
+disableKinds = ["taxonomy", "term"]
 
 [languages]
   [languages.et]
@@ -12,15 +12,34 @@ disableKinds = ["taxonomy", "term", "RSS"]
     weight = 1
     title = "Vango Imedemaa"
     contentDir = "content/et"
+    # :slug derives the URL from the title in each language (override per page
+    # with `slug:` in front matter). Declared for both languages so the two
+    # behave identically.
+    [languages.et.permalinks.page]
+      uudised = "/uudised/:slug/"
+      sundmused = "/sundmused/:slug/"
+      galerii = "/galerii/:slug/"
+
   [languages.en]
     locale = "en-GB"
     label = "English"
     weight = 2
     title = "Vango Wonderland"
     contentDir = "content/en"
+    # Content directories keep the Estonian names in both languages so a page
+    # and its translation sit at the same path; only the public URL differs.
+    [languages.en.permalinks.section]
+      uudised = "/news/"
+      sundmused = "/events/"
+      galerii = "/gallery/"
+    [languages.en.permalinks.page]
+      uudised = "/news/:slug/"
+      sundmused = "/events/:slug/"
+      galerii = "/gallery/:slug/"
 
 [outputs]
   home = ["HTML"]
+  section = ["HTML", "RSS"]
 
 [markup.goldmark.renderer]
   unsafe = true   # room bodies are trusted HTML lifted from the old site

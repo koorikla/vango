@@ -17,13 +17,20 @@
 
     <nav class="langs" aria-label="Language">
       <ul>
+        {{- $page := . }}
         {{- range hugo.Sites }}
         {{- $s := . }}
         <li>
           {{- if eq $s.Language.Lang site.Language.Lang }}
           <span aria-current="true">{{ $s.Language.Label }}</span>
           {{- else }}
-          <a href="{{ $s.Home.RelPermalink }}" hreflang="{{ $s.Language.Locale }}">{{ $s.Language.Label }}</a>
+          {{- /* Land on the translation of the page you are actually reading;
+                 fall back to that language's home page when none exists. */ -}}
+          {{- $target := $s.Home }}
+          {{- range $page.AllTranslations }}
+          {{- if eq .Language.Lang $s.Language.Lang }}{{ $target = . }}{{ end }}
+          {{- end }}
+          <a href="{{ $target.RelPermalink }}" hreflang="{{ $s.Language.Locale }}">{{ $s.Language.Label }}</a>
           {{- end }}
         </li>
         {{- end }}
@@ -46,8 +53,25 @@
       <span>{{ i18n "menu" }}</span>
     </button>
     <ul class="site-nav__list" id="site-menu">
+      {{- /* On the home page the first five are in-page anchors; anywhere else
+             they have to jump back to the home page first. */ -}}
+      {{- $home := site.Home.RelPermalink }}
       {{- range $sections }}
-      <li><a href="#{{ .id }}">{{ .label }}</a></li>
+      <li><a href="{{ if $.IsHome }}#{{ .id }}{{ else }}{{ $home }}#{{ .id }}{{ end }}">{{ .label }}</a></li>
+      {{- end }}
+      {{- /* "What's on" — sections with their own pages. They appear only once
+             they have content, and sit in a second visual group so the nav
+             does not read as nine equal items. */ -}}
+      {{- $first := true }}
+      {{- range slice "uudised" "sundmused" "galerii" }}
+      {{- with site.GetPage (printf "/%s" .) }}
+      {{- if .RegularPages }}
+      <li class="site-nav__page{{ if $first }} site-nav__page--first{{ end }}">
+        <a href="{{ .RelPermalink }}"{{ if hasPrefix $.RelPermalink .RelPermalink }} aria-current="page"{{ end }}>{{ .Title }}</a>
+      </li>
+      {{- $first = false }}
+      {{- end }}
+      {{- end }}
       {{- end }}
       <li>
         <a class="site-nav__book" href="{{ $d.booking.url }}" target="_blank" rel="noopener">

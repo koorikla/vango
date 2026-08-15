@@ -1,0 +1,33 @@
+{{- /* A list of pages as cards. Cover art comes from `cover` in front matter,
+       or failing that the first image resource in the page bundle. */ -}}
+<ul class="cards">
+  {{- range . }}
+  {{- $cover := "" }}
+  {{- with .Params.cover }}{{ $cover = $.Page.Resources.GetMatch . | default (resources.Get .) }}{{ end }}
+  {{- if not $cover }}{{ $cover = .Resources.GetMatch "{*.jpg,*.jpeg,*.png,*.webp}" }}{{ end }}
+  <li class="card">
+    <a class="card__link" href="{{ .RelPermalink }}">
+      <span class="card__media">
+        {{- if $cover }}
+        {{- $c := $cover.Fill "720x480 Center webp q80" }}
+        <img src="{{ $c.RelPermalink }}" width="720" height="480" alt="" loading="lazy" decoding="async">
+        {{- else }}
+        <span class="card__media-empty" aria-hidden="true"></span>
+        {{- end }}
+      </span>
+      <span class="card__body">
+        {{- /* eventDate is a plain front matter string; .Date is already a time */ -}}
+        {{- $when := cond (ne .Params.eventDate nil) (time.AsTime (.Params.eventDate | default "2000-01-01")) .Date }}
+        {{- if not $when.IsZero }}
+        <time class="card__date" datetime="{{ $when.Format "2006-01-02" }}">
+          {{ time.Format ":date_medium" $when }}
+        </time>
+        {{- end }}
+        <span class="card__title">{{ .Title }}</span>
+        {{- with .Params.location }}<span class="card__meta">{{ . }}</span>{{ end }}
+        <span class="card__excerpt">{{ .Summary | plainify | truncate 140 }}</span>
+      </span>
+    </a>
+  </li>
+  {{- end }}
+</ul>

@@ -1,0 +1,49 @@
+{{ define "main" }}
+{{- $images := .Resources.Match "{*.jpg,*.jpeg,*.png,*.webp}" -}}
+{{- $isGallery := eq .Section "galerii" -}}
+
+<article class="page post">
+  <header class="page__head">
+    <p class="post__back"><a href="{{ .Parent.RelPermalink }}">&larr; {{ .Parent.Title }}</a></p>
+    <h1 class="page-title">{{ .Title }}</h1>
+
+    {{- /* Custom front matter dates arrive as strings, unlike the built-in
+           `date`, so they have to be cast before formatting. */ -}}
+    {{- if .Params.eventDate }}
+    {{- $start := time.AsTime .Params.eventDate }}
+    <dl class="post__facts">
+      <div>
+        <dt>{{ i18n "event_when" }}</dt>
+        <dd>
+          <time datetime="{{ $start.Format "2006-01-02" }}">
+            {{ time.Format ":date_long" $start }}
+          </time>
+          {{- with .Params.eventEnd }}
+          {{- $end := time.AsTime . }} &ndash;
+          <time datetime="{{ $end.Format "2006-01-02" }}">{{ time.Format ":date_long" $end }}</time>
+          {{- end }}
+        </dd>
+      </div>
+      {{- with .Params.location }}
+      <div><dt>{{ i18n "event_where" }}</dt><dd>{{ . }}</dd></div>
+      {{- end }}
+    </dl>
+    {{- else if not .Date.IsZero }}
+    <p class="post__date">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ time.Format ":date_long" .Date }}</time>
+    </p>
+    {{- end }}
+  </header>
+
+  {{- /* A gallery page leads with its pictures; an article leads with its text. */ -}}
+  {{- if and $isGallery $images }}
+    {{ partial "photo-grid.html" (dict "images" $images "group" .File.ContentBaseName "caption" .Title) }}
+    <div class="prose post__body">{{ .Content }}</div>
+  {{- else }}
+    <div class="prose post__body">{{ .Content }}</div>
+    {{- with $images }}
+      {{ partial "photo-grid.html" (dict "images" . "group" $.File.ContentBaseName "caption" $.Title) }}
+    {{- end }}
+  {{- end }}
+</article>
+{{ end }}
