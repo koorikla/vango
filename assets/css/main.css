@@ -58,7 +58,10 @@ body {
   font-size: var(--step-0);
   font-weight: 400;
   line-height: 1.65;
-  overflow-x: hidden;
+  /* `clip` (not `hidden`) contains the rotating decorations without
+     turning <body> into a scroll container, so smooth anchor scrolling
+     and position:fixed keep working. */
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -242,14 +245,21 @@ main {
 
 .room {
   display: grid;
-  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  grid-template-columns: max-content minmax(0, 1fr);
   align-items: center;
   gap: clamp(1.5rem, 4vw, 3rem);
   scroll-margin-top: 2rem;
 }
-.room--flip > .room__media { order: 2; }
+.room__media { grid-area: 1 / 1; }
+.room__text  { grid-area: 1 / 2; }
 
-.room__media { display: grid; justify-items: center; gap: 1rem; width: max-content; }
+/* Mirror the layout on alternate rooms by swapping the tracks, not the
+   source order — `order` alone let the media escape the 1fr column. */
+.room--flip { grid-template-columns: minmax(0, 1fr) max-content; }
+.room--flip .room__media { grid-area: 1 / 2; }
+.room--flip .room__text  { grid-area: 1 / 1; }
+
+.room__media { display: grid; justify-items: center; gap: 1rem; }
 
 /* --- hero circle + decorations --- */
 .room__hero {

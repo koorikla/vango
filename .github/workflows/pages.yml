@@ -1,111 +1,80 @@
-name: Build and deploy to GitHub Pages
+name: Deploy to GitHub Pages
+
+# GitHub only serves Pages from a private repo on Pro/Team/Enterprise plans.
+# While the repo is private on a Free plan, Pages cannot be enabled — so the
+# guard job below checks first and the rest of the workflow skips cleanly
+# instead of failing every push. Enable Pages (Settings > Pages > Source:
+# GitHub Actions) and this starts deploying on its own, no edit needed.
+#
+# The long-term target is Cloudflare Pages, which builds private repos on the
+# free plan and honours static/_redirects. This workflow is the interim host.
 
 on:
   push:
     branches: [main]
-  pull_request:
   workflow_dispatch:
 
-# The site is static, so the deploy only ever needs to read the repo and
-# push the built artifact to Pages.
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Never let two deploys race; let a newer commit cancel an in-flight PR build.
 concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: pages
+  cancel-in-progress: false
 
 env:
-  # Keep in step with the hugo version used locally (hugo version).
   HUGO_VERSION: 0.165.0
 
 jobs:
+  guard:
+    name: Is Pages enabled?
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.check.outputs.enabled }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${GITHUB_REPOSITORY}/pages" --silent 2>/dev/null; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Pages is not enabled for this repository — skipping deploy."
+          fi
+
   build:
+    needs: guard
+    if: needs.guard.outputs.enabled == 'true'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Install Hugo
         run: |
           curl -sSL -o hugo.deb \
             "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
           sudo dpkg -i hugo.deb
 
-      - uses: actions/checkout@v4
-
-      # Only needed so Pages can tell us the base_url to build against —
-      # hugo.toml keeps the production baseURL (https://vango.ee/) for Cloudflare.
+      # Pages serves from a /<repo>/ subpath, so the production baseURL in
+      # hugo.toml (https://vango.ee/) has to be overridden at build time.
+      # hugo.toml stays correct for Cloudflare.
       - name: Configure Pages
         id: pages
-        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: Build
-        run: |
-          hugo --gc --minify \
-            --baseURL "${BASE_URL:-http://localhost/}"
+        run: hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
         env:
-          BASE_URL: ${{ steps.pages.outputs.base_url }}
           HUGO_ENVIRONMENT: production
 
-      - name: Upload Pages artifact
-        if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
 
-  # The Playwright suite runs itself against `hugo server` (see
-  # playwright.config.js), so it needs Hugo and node but no built artifact.
-  # Skipped until tests/ actually has specs in it.
-  e2e:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check for tests
-        id: check
-        run: |
-          if compgen -G "tests/*.spec.js" > /dev/null; then
-            echo "found=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "found=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No specs in tests/ yet — skipping the E2E run."
-          fi
-
-      - name: Install Hugo
-        if: steps.check.outputs.found == 'true'
-        run: |
-          curl -sSL -o hugo.deb \
-            "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
-          sudo dpkg -i hugo.deb
-
-      - uses: actions/setup-node@v4
-        if: steps.check.outputs.found == 'true'
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        if: steps.check.outputs.found == 'true'
-        run: |
-          npm install
-          npx playwright install --with-deps chromium
-
-      - name: Run Playwright
-        if: steps.check.outputs.found == 'true'
-        run: npm test
-
-      - name: Upload report
-        if: steps.check.outputs.found == 'true' && failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
-
   deploy:
-    needs: [build, e2e]
-    if: github.event_name != 'pull_request'
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages

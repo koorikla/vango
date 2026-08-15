@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Keep in step with the hugo version used locally (hugo version).
+  HUGO_VERSION: 0.165.0
+
+jobs:
+  build:
+    name: Hugo build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Hugo
+        run: |
+          curl -sSL -o hugo.deb \
+            "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
+          sudo dpkg -i hugo.deb
+
+      # Builds against the production baseURL from hugo.toml. The deploy
+      # workflow rebuilds with whatever baseURL the target host needs.
+      - name: Build
+        run: hugo --gc --minify --printPathWarnings
+        env:
+          HUGO_ENVIRONMENT: production
+
+      - name: Summarise output
+        run: |
+          echo "### Build output" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          du -sh public >> "$GITHUB_STEP_SUMMARY"
+          find public -name '*.html' | wc -l | xargs echo "HTML pages:" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+  # The Playwright suite starts `hugo server` itself (see playwright.config.js),
+  # so it needs Hugo and node but no artifact from the build job.
+  e2e:
+    name: E2E
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for specs
+        id: check
+        run: |
+          if compgen -G "tests/*.spec.js" > /dev/null; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No specs in tests/ yet — skipping the E2E run."
+          fi
+
+      - name: Install Hugo
+        if: steps.check.outputs.found == 'true'
+        run: |
+          curl -sSL -o hugo.deb \
+            "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
+          sudo dpkg -i hugo.deb
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.found == 'true'
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        if: steps.check.outputs.found == 'true'
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Run Playwright
+        if: steps.check.outputs.found == 'true'
+        run: npm test
+
+      - name: Upload report
+        if: steps.check.outputs.found == 'true' && failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
