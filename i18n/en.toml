@@ -1,0 +1,32 @@
+[photos]
+other = "Photos"
+
+[open_gallery]
+other = "Open gallery"
+
+[close]
+other = "Close"
+
+[previous]
+other = "Previous"
+
+[next]
+other = "Next"
+
+[back_to_top]
+other = "Back to top"
+
+[skip_to_content]
+other = "Skip to content"
+
+[menu]
+other = "Menu"
+
+[image_of]
+other = "Image %d of %d"
+
+[view_on_map]
+other = "View on Google Maps"
+
+[opens_new_window]
+other = "opens in a new window"

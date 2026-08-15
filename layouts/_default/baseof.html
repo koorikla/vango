@@ -1,0 +1,53 @@
+{{- $d := index hugo.Data site.Language.Lang "site" -}}
+<!doctype html>
+<html lang="{{ site.Language.Locale }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ $d.meta.seoTitle | default site.Title }}</title>
+  <meta name="description" content="{{ $d.meta.description }}">
+
+  {{- with .OutputFormats.Get "html" }}<link rel="canonical" href="{{ .Permalink }}">{{ end }}
+  {{- range .AllTranslations }}
+  <link rel="alternate" hreflang="{{ .Language.Locale }}" href="{{ .Permalink }}">
+  {{- end }}
+  <link rel="alternate" hreflang="x-default" href="{{ site.Home.Permalink }}">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ site.Title }}">
+  <meta property="og:title" content="{{ $d.meta.seoTitle }}">
+  <meta property="og:description" content="{{ $d.meta.description }}">
+  <meta property="og:url" content="{{ .Permalink }}">
+  {{- with resources.Get "img/theme/video-still.jpg" }}
+  {{- $og := .Resize "1200x630 Center q80 webp" }}
+  <meta property="og:image" content="{{ $og.Permalink }}">
+  {{- end }}
+  <meta name="twitter:card" content="summary_large_image">
+
+  {{- with resources.Get "img/theme/logo500.png" }}
+  {{- $ico := .Resize "180x180 png" }}
+  <link rel="icon" href="{{ $ico.RelPermalink }}" sizes="any">
+  <link rel="apple-touch-icon" href="{{ $ico.RelPermalink }}">
+  {{- end }}
+
+  {{- $css := resources.Get "css/main.css" | resources.ExecuteAsTemplate "css/main.css" . }}
+  {{- if hugo.IsProduction }}{{ $css = $css | minify | fingerprint }}{{ end }}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}"{{ with $css.Data.Integrity }} integrity="{{ . }}"{{ end }}>
+
+  {{ partial "schema.html" . }}
+</head>
+<body>
+  <a class="skip-link" href="#main">{{ i18n "skip_to_content" }}</a>
+  {{ partial "backdrop.html" . }}
+  {{ partial "header.html" . }}
+  <main id="main">
+    {{ block "main" . }}{{ end }}
+  </main>
+  {{ partial "footer.html" . }}
+  {{ partial "lightbox.html" . }}
+
+  {{- $js := resources.Get "js/main.js" }}
+  {{- if hugo.IsProduction }}{{ $js = $js | minify | fingerprint }}{{ end }}
+  <script src="{{ $js.RelPermalink }}" defer></script>
+</body>
+</html>

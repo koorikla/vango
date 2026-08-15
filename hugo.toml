@@ -1,0 +1,51 @@
+baseURL = "https://vango.ee/"
+defaultContentLanguage = "et"
+defaultContentLanguageInSubdir = false
+enableRobotsTXT = true
+# no theme: layouts live in this repo, so there is nothing extra to keep upgraded
+disableKinds = ["taxonomy", "term", "RSS"]
+
+[languages]
+  [languages.et]
+    locale = "et-EE"
+    label = "Eesti"
+    weight = 1
+    title = "Vango Imedemaa"
+    contentDir = "content/et"
+  [languages.en]
+    locale = "en-GB"
+    label = "English"
+    weight = 2
+    title = "Vango Wonderland"
+    contentDir = "content/en"
+
+[outputs]
+  home = ["HTML"]
+
+[markup.goldmark.renderer]
+  unsafe = true   # room bodies are trusted HTML lifted from the old site
+
+[imaging]
+  resampleFilter = "Lanczos"
+  [imaging.jpeg]
+    quality = 80
+  [imaging.webp]
+    quality = 80
+
+# Rooms are sections of the one-pager, not standalone pages.
+# They still exist as content files so each room stays a separate,
+# translatable file — they just do not get their own URL.
+[[cascade]]
+  [cascade.target]
+    path = "{/ruumid,/ruumid/**}"
+  [cascade.build]
+    render = "never"   # no standalone URL
+    list = "always"    # but still available to the homepage template
+
+[params]
+  facebook = "https://www.facebook.com/vangoimedemaa"
+  instagram = "https://www.instagram.com/vangotalu/"
+  email = "info@vango.ee"
+
+[minify]
+  minifyOutput = true

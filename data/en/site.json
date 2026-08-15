@@ -1,0 +1,140 @@
+{
+  "meta": {
+    "seoTitle": "Vango Imedemaa - Vango Imedemaa : Vango Imedemaa",
+    "description": "To find activities for your stay or private event, please contact us at info@vango.ee or our partner companies.",
+    "heading": "Vango Wonderland",
+    "ogImage": "img/uploads/2015-01-DJI_0536-scaled-e1620747320239.jpg"
+  },
+  "nav": [
+    {
+      "id": "1",
+      "label": "Territory"
+    },
+    {
+      "id": "2",
+      "label": "Meals"
+    },
+    {
+      "id": "5",
+      "label": "Activities"
+    },
+    {
+      "id": "3",
+      "label": "Partners"
+    },
+    {
+      "id": "4",
+      "label": "Contact"
+    }
+  ],
+  "booking": {
+    "url": "http://www.freetobook.com/affiliates/reservation.php?w_id=20891&w_tkn=QxNMlll1szLRpXxvf3T5wE4gsHN4caXSouH6nClTpxAxGLp9Tse0OhXHgnSPc",
+    "label": "Booking"
+  },
+  "toitlustus": {
+    "title": "Meals",
+    "lead": "For culinary information and menus please contact us: info@vango.ee",
+    "images": [
+      "img/uploads/2020-04-food1.jpg",
+      "img/uploads/2020-04-food2opt-1.jpg"
+    ]
+  },
+  "tegevused": {
+    "title": "Activities",
+    "body": "<p>To find activities for your stay or private event, please contact us at <a rel=\"noopener\" href=\"mailto:info@vango.ee\" target=\"_blank\">info@vango.ee</a> or our partner companies.</p>",
+    "images": [
+      "img/uploads/2020-04-raba-s2-2.jpg",
+      "img/uploads/2020-04-raba2-s2-2.jpg",
+      "img/uploads/2020-04-kanuu-s2-1.jpg",
+      "img/uploads/2024-09-pulm2024-scaled.jpg"
+    ]
+  },
+  "partnerid": {
+    "title": "Partners",
+    "items": [
+      {
+        "name": "Livonia Matkad",
+        "url": "http://www.livoniamatkad.ee/",
+        "logo": "img/uploads/2020-04-livonia-1.jpg",
+        "contain": false
+      },
+      {
+        "name": "Seiklusring",
+        "url": "http://www.seiklusring.ee/",
+        "logo": "img/uploads/2020-04-seiklusring-1.jpg",
+        "contain": false
+      },
+      {
+        "name": "Seikluspartner",
+        "url": "https://www.facebook.com/seikluspartner/",
+        "logo": "img/uploads/2020-04-seikluspartner-1.png",
+        "contain": true
+      },
+      {
+        "name": "360 kraadi",
+        "url": "https://360.ee",
+        "logo": "img/uploads/2021-05-360_logo-removebg-preview.png",
+        "contain": false
+      },
+      {
+        "name": "Allikukivi veinimõis",
+        "url": "https://www.allikukivi.ee",
+        "logo": "img/uploads/2017-11-allikukivi.png",
+        "contain": false
+      },
+      {
+        "name": "Volli Grill",
+        "url": "http://volligrill.ee/",
+        "logo": "img/uploads/2020-04-volli.png",
+        "contain": false
+      },
+      {
+        "name": "Saunatee.ee",
+        "url": "https://www.saunatee.ee",
+        "logo": "img/uploads/2021-05-Saunatee_logo-1.jpg",
+        "contain": false
+      },
+      {
+        "name": "Eesti Maaturism",
+        "url": "http://www.maaturism.ee/",
+        "logo": "img/uploads/2020-04-maaturism.png",
+        "contain": true
+      },
+      {
+        "name": "Romantiline Rannatee",
+        "url": "http://www.rannatee.ee/",
+        "logo": "img/uploads/2016-02-R-Rannatee_logo.png",
+        "contain": true
+      },
+      {
+        "name": "Hiker-friendly",
+        "url": "",
+        "logo": "img/uploads/2021-11-Hiker-Friendly_EE_sign.png",
+        "contain": false
+      }
+    ]
+  },
+  "kontakt": {
+    "title": "Contact",
+    "intro": "<p>For price offering please send an email and make sure to include the dates you are interested in and the approximate size of your group. Also please introduce your food preferences. <b></b></p><h2>Getting here</h2><p>When driving from Pärnu to the direction of Ikla: Drive straight on till you reach a sign pointing to the left showing Valga 126 km, Viljandi 78 km, Kilingi-Nõmme 30 km. Approx 8 km out of Pärnu. Make a left there and drive on approx. 18 km. You will then see a sign pointing to the right to Häädemeeste 24 km and Tallinn—Pärnu—Ikla mnt 23 km. Make a right there and continue driving for approx. 5,5 km till a bus stop called Vangu. Turn right to Wonderland after that bus stop.</p><p>When driving from Ikla to the direction of Pärnu: In Arumetsa turn right by the Circle K petrol station. There is a sign there pointing to right to Kilingi-Nõmme and Valga—Uulu mnt. Continue for 17 km. Turn left just before the Vangu bus stop.</p><p><b>Or just navigate to &#8220;Vango Holiday Village&#8221; on Google Maps.</b></p>",
+    "columns": [
+      {
+        "title": "Address",
+        "body": "<p>Vangotalu</p><p>Saarde Parish, Laiksaare Village</p><p>Pärnu County</p>"
+      },
+      {
+        "title": "Contacts",
+        "body": "<p>E-mail: info@vango.ee</p><p>Phone: (+372) 516 3259 / (+372) 506 3365</p><p>Facebook: <a href=\"https://www.facebook.com/vangoimedemaa\" target=\"_blank\" rel=\"noopener\">Link</a></p><p>Instagram: <a href=\"https://www.instagram.com/vangotalu/\" target=\"_blank\" rel=\"noopener\">Link</a></p>"
+      },
+      {
+        "title": "Coordinates",
+        "body": "<p>N 58°07’53”</p><p>E 24°45’45”</p>"
+      }
+    ],
+    "mapUrl": "https://www.google.com/maps/place/58%C2%B007'55.2%22N+24%C2%B045'36.0%22E/@58.1279662,24.7532194,12z/data=!4m2!3m1!1s0x0:0x0?hl=en"
+  },
+  "credit": {
+    "url": "http://www.martinmarss.ee/",
+    "label": "Web by Märss"
+  }
+}

@@ -1,0 +1,39 @@
+{{- /*
+  Responsive <img> from an asset path.
+  Params: src (asset path), alt, class, sizes, widths (slice), loading, fetchpriority
+  Emits AVIF/WebP srcsets with a JPEG/PNG fallback; all generated at build time.
+*/ -}}
+{{- $src := .src -}}
+{{- $r := resources.Get $src -}}
+{{- if not $r -}}
+  {{- warnf "img partial: asset not found: %s" $src -}}
+{{- else -}}
+{{- $alt := .alt | default "" -}}
+{{- $class := .class | default "" -}}
+{{- $sizes := .sizes | default "100vw" -}}
+{{- $loading := .loading | default "lazy" -}}
+{{- $widths := .widths | default (slice 480 768 1100 1600) -}}
+{{- $isPNG := eq (path.Ext $src) ".png" -}}
+
+{{- /* never upscale */ -}}
+{{- $ws := slice -}}
+{{- range $widths }}{{ if le . $r.Width }}{{ $ws = $ws | append . }}{{ end }}{{ end -}}
+{{- if not $ws }}{{ $ws = slice $r.Width }}{{ end -}}
+
+{{- $webp := slice -}}
+{{- range $ws }}
+  {{- $i := $r.Resize (printf "%dx webp q80" .) -}}
+  {{- $webp = $webp | append (printf "%s %dw" $i.RelPermalink $i.Width) -}}
+{{- end -}}
+
+{{- $fbSpec := cond $isPNG "png" "jpg q80" -}}
+{{- $fb := $r.Resize (printf "%dx %s" (index (last 1 $ws) 0) $fbSpec) -}}
+<img{{ with $class }} class="{{ . }}"{{ end }}
+     src="{{ $fb.RelPermalink }}"
+     srcset="{{ delimit $webp ", " }}"
+     sizes="{{ $sizes }}"
+     width="{{ $fb.Width }}" height="{{ $fb.Height }}"
+     alt="{{ $alt }}"
+     loading="{{ $loading }}" decoding="async"
+     {{- with .fetchpriority }} fetchpriority="{{ . }}"{{ end }}>
+{{- end -}}

@@ -1,0 +1,16 @@
+{{- /* Native <dialog> lightbox. Replaces the old jQuery prettyPhoto. */ -}}
+<dialog class="lightbox" id="lightbox" aria-label="{{ i18n "photos" }}">
+  <div class="lightbox__stage">
+    <img class="lightbox__img" alt="">
+  </div>
+  <p class="lightbox__caption"></p>
+  <button class="lightbox__btn lightbox__btn--prev" type="button" aria-label="{{ i18n "previous" }}">
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M15 4 7 12l8 8z"/></svg>
+  </button>
+  <button class="lightbox__btn lightbox__btn--next" type="button" aria-label="{{ i18n "next" }}">
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M9 4l8 8-8 8z"/></svg>
+  </button>
+  <button class="lightbox__btn lightbox__btn--close" type="button" aria-label="{{ i18n "close" }}">
+    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="m6 5 13 13-1 1L5 6zM19 6 6 19l-1-1L18 5z"/></svg>
+  </button>
+</dialog>

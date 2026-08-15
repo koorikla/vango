@@ -1,0 +1,16 @@
+{
+  "name": "vango",
+  "version": "1.0.0",
+  "private": true,
+  "description": "vango.ee — static site (Hugo). npm is only used for the E2E tests; the site itself has no build dependencies.",
+  "scripts": {
+    "dev": "hugo server --disableFastRender",
+    "build": "hugo --gc --minify",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:install": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

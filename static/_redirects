@@ -1,0 +1,42 @@
+# Cloudflare Pages redirects — keep old WordPress URLs alive.
+# The site is a one-pager, so deep links land on the matching anchor.
+
+# Rooms (Estonian)
+/ruumid/asukoht          /#asukoht          301
+/ruumid/peomaja          /#peomaja          301
+/ruumid/tiigimaja        /#tiigimaja        301
+/ruumid/suur-ait         /#suur-ait         301
+/ruumid/vaike-ait        /#vaike-ait        301
+/ruumid/trahter-lava     /#trahter-lava     301
+/ruumid/rabbithole       /#rabbithole       301
+/ruumid/saunamaja        /#saunamaja        301
+/ruumid/saunamaja-2      /#saunamaja        301
+/ruumid/suitsusaun       /#suitsusaun       301
+/ruumid/indiaanisaun-3   /#indiaanisaun-3   301
+/ruumid/laagriplats-2    /#laagriplats-2    301
+/ruumid/kodumaja         /#kodumaja         301
+/ruumid/*                /#ruumid           301
+
+# Rooms (English)
+/en/ruumid/saunamaja-2   /en/#saunamaja     301
+/en/ruumid/:slug         /en/#:slug         301
+/en/ruumid/*             /en/#ruumid        301
+
+# Other custom post types
+/toitlustus/*            /#toitlustus       301
+/en/toitlustus/*         /en/#toitlustus    301
+/partnerid/*             /#partnerid        301
+/en/partnerid/*          /en/#partnerid     301
+
+# WordPress leftovers
+/wp-admin/*              /                  301
+/wp-login.php            /                  301
+/category/*              /                  301
+/en/category/*           /en/               301
+
+# The Spanish tree was never translated — it duplicated the Estonian site.
+/es/*                    /                  301
+
+# Old media paths still linked from elsewhere
+/wp-content/uploads/2025/06/broneerimistingimused.pdf  /docs/broneerimistingimused.pdf  301
+/wp-content/uploads/2024/08/vango_projektid.pdf        /docs/vango_projektid.pdf        301

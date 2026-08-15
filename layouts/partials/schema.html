@@ -1,0 +1,25 @@
+{{- $d := index hugo.Data site.Language.Lang "site" -}}
+{{- $addr := "" }}{{ $tel := "" }}
+{{- range $d.kontakt.columns }}
+  {{- $body := replaceRE "<[^>]+>" "\n" .body }}
+  {{- if findRE "(?i)(telefon|phone)" $body }}{{ $tel = trim (index (findRE "[0-9][0-9 ]{5,}" $body) 0) " " }}{{ end }}
+{{- end }}
+<script type="application/ld+json">
+{{ dict
+  "@context" "https://schema.org"
+  "@type" "Campground"
+  "name" site.Title
+  "description" $d.meta.description
+  "url" site.Home.Permalink
+  "email" site.Params.email
+  "telephone" $tel
+  "address" (dict
+    "@type" "PostalAddress"
+    "streetAddress" "Vango metsavahi koht"
+    "addressLocality" "Laiksaare küla, Saarde vald"
+    "addressRegion" "Pärnu maakond"
+    "addressCountry" "EE")
+  "geo" (dict "@type" "GeoCoordinates" "latitude" 58.131389 "longitude" 24.762500)
+  "sameAs" (slice site.Params.facebook site.Params.instagram)
+  | jsonify (dict "indent" "  ") | safeJS }}
+</script>

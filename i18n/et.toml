@@ -1,0 +1,32 @@
+[photos]
+other = "Pildid"
+
+[open_gallery]
+other = "Ava galerii"
+
+[close]
+other = "Sulge"
+
+[previous]
+other = "Eelmine"
+
+[next]
+other = "Järgmine"
+
+[back_to_top]
+other = "Tagasi üles"
+
+[skip_to_content]
+other = "Liigu sisu juurde"
+
+[menu]
+other = "Menüü"
+
+[image_of]
+other = "Pilt %d / %d"
+
+[view_on_map]
+other = "Vaata Google Mapsis"
+
+[opens_new_window]
+other = "avaneb uues aknas"

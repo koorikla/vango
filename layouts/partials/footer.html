@@ -1,0 +1,19 @@
+{{- $d := index hugo.Data site.Language.Lang "site" -}}
+<footer class="site-footer">
+  <p class="site-footer__links">
+    <a href="mailto:{{ site.Params.email }}">{{ site.Params.email }}</a>
+    <a href="{{ site.Params.facebook }}" target="_blank" rel="noopener">Facebook</a>
+    <a href="{{ site.Params.instagram }}" target="_blank" rel="noopener">Instagram</a>
+  </p>
+  {{- with $d.credit }}
+  <p class="site-footer__credit">
+    <a href="{{ .url }}" target="_blank" rel="noopener">{{ .label }}</a>
+  </p>
+  {{- end }}
+</footer>
+
+<button class="to-top" type="button" hidden aria-label="{{ i18n "back_to_top" }}">
+  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+    <path fill="currentColor" d="M12 5.5 4.5 15h15z"/>
+  </svg>
+</button>

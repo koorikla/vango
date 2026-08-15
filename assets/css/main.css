@@ -1,0 +1,510 @@
+{{- /* Processed by Hugo (ExecuteAsTemplate) so backgrounds get fingerprinted URLs. */ -}}
+{{- $colorBg  := (resources.Get "img/theme/color-bg.png").RelPermalink -}}
+{{- $vinesUp  := (resources.Get "img/theme/vines-up-o.png").RelPermalink -}}
+{{- $headerBg := (resources.Get "img/theme/header-bg.png").RelPermalink -}}
+{{- $lill     := (resources.Get "img/theme/lill.png").RelPermalink -}}
+{{- $ring     := (resources.Get "img/theme/valge-ring.png").RelPermalink -}}
+{{- $mandala  := (resources.Get "img/theme/mandala.png").RelPermalink -}}
+{{- $feather  := (resources.Get "img/theme/feather.png").RelPermalink -}}
+
+/* ============================================================
+   Vango Imedemaa — design tokens
+   ============================================================ */
+:root {
+  --ink:        #333;
+  --ink-soft:   #5f5f5f;
+  --ink-strong: #272727;
+  --heading:    #414141;
+  --accent:     #f45a4c;
+  --accent-2:   #f5a623;
+  --page:       #f7f7f7;
+  --sheet:      rgba(255, 255, 255, .92);
+  --rule:       rgba(65, 65, 65, .14);
+
+  --sheet-w:    1060px;
+  --gutter:     clamp(1rem, 4vw, 2.5rem);
+
+  --font: "Lato", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --step-0: clamp(1rem, .96rem + .2vw, 1.0625rem);
+  --step-1: clamp(1.15rem, 1.08rem + .35vw, 1.35rem);
+  --step-2: clamp(1.35rem, 1.2rem + .7vw, 1.75rem);
+
+  --hero:   clamp(190px, 26vw, 260px);
+  --radius: 14px;
+  --ease:   cubic-bezier(.22, .61, .36, 1);
+}
+
+/* Self-hosted Lato — no third-party font request, no layout shift. */
+@font-face {
+  font-family: "Lato"; font-style: normal; font-weight: 300; font-display: swap;
+  src: local("Lato Light"), local("Lato-Light");
+}
+@font-face {
+  font-family: "Lato"; font-style: normal; font-weight: 400; font-display: swap;
+  src: local("Lato Regular"), local("Lato-Regular");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--step-0);
+  font-weight: 400;
+  line-height: 1.65;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: inherit; }
+
+:where(a, button, [tabindex]):focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px;
+  padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute; left: 50%; top: 0; translate: -50% -120%;
+  z-index: 200; padding: .7rem 1.2rem; background: #fff; color: var(--ink);
+  border-radius: 0 0 var(--radius) var(--radius); box-shadow: 0 4px 20px rgb(0 0 0 / .18);
+  text-decoration: none; transition: translate .2s var(--ease);
+}
+.skip-link:focus-visible { translate: -50% 0; }
+
+/* ============================================================
+   Watercolour backdrop
+   ============================================================ */
+.backdrop { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+
+.backdrop__colour {
+  position: absolute; inset: 0;
+  background: url("{{ $colorBg }}") center top / cover no-repeat, var(--page);
+}
+.backdrop__colour::after {
+  content: ""; position: absolute; inset: 0;
+  background: url("{{ $vinesUp }}") center top / 1400px auto repeat-y;
+  opacity: .22;
+}
+/* The white reading sheet the content sits on. */
+.backdrop__sheet {
+  position: absolute; inset-block: 0; left: 50%; translate: -50% 0;
+  width: min(var(--sheet-w), 100%);
+  background: var(--sheet);
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+.site-header {
+  position: relative;
+  width: min(var(--sheet-w), 100%);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  padding-bottom: .5rem;
+}
+
+.site-header::before {
+  content: ""; position: absolute; z-index: -1;
+  top: 0; left: 50%; translate: -50% 0;
+  width: 1263px; max-width: 130%; aspect-ratio: 1263 / 261;
+  background: url("{{ $headerBg }}") center / contain no-repeat;
+  opacity: .85; pointer-events: none;
+}
+
+.site-header__top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; padding-block: 1.1rem; min-height: 3.25rem;
+}
+
+.social {
+  display: grid; place-items: center; width: 2rem; height: 2rem;
+  border-radius: 50%; background: #3b5998; color: #fff;
+  opacity: .87; transition: opacity .25s var(--ease), scale .25s var(--ease);
+}
+.social:hover { opacity: 1; scale: 1.08; }
+
+.langs ul { display: flex; gap: 1rem; margin: 0; padding: 0; list-style: none; }
+.langs a, .langs span { font-size: .95rem; text-decoration: none; color: var(--ink-soft); }
+.langs a:hover { color: var(--accent); }
+.langs [aria-current] { color: var(--heading); font-weight: 400; }
+
+/* --- logo --- */
+.logo {
+  position: relative; display: grid; place-items: center;
+  width: min(260px, 60vw); margin-inline: auto; padding-block: .5rem 1rem;
+}
+.logo__halo {
+  position: absolute; inset: -18% -18% auto -18%; aspect-ratio: 1;
+  background:
+    url("{{ $ring }}")  center / 84% 84% no-repeat,
+    url("{{ $lill }}")  center / contain no-repeat;
+  animation: spin 200s linear infinite;
+}
+/* keep the white ring still while only the petals turn */
+.logo__halo::after {
+  content: ""; position: absolute; inset: 8%;
+  background: url("{{ $ring }}") center / contain no-repeat;
+  animation: spin 200s linear infinite reverse;
+}
+.logo__mark { position: relative; z-index: 1; width: 100%; }
+
+@keyframes spin { to { rotate: 360deg; } }
+
+/* --- nav --- */
+.site-nav { position: relative; }
+
+.site-nav__toggle {
+  display: none;
+  align-items: center; gap: .6rem; margin-inline: auto;
+  padding: .7rem 1.1rem; border: 1px solid var(--rule); border-radius: 999px;
+  background: #fff; color: var(--ink-strong); font: inherit;
+  text-transform: uppercase; letter-spacing: 1px; font-size: .85rem; cursor: pointer;
+}
+.site-nav__bars, .site-nav__bars::before, .site-nav__bars::after {
+  display: block; width: 18px; height: 2px; background: currentColor;
+  border-radius: 2px; transition: translate .25s var(--ease), rotate .25s var(--ease);
+}
+.site-nav__bars { position: relative; }
+.site-nav__bars::before, .site-nav__bars::after { content: ""; position: absolute; left: 0; }
+.site-nav__bars::before { translate: 0 -6px; }
+.site-nav__bars::after  { translate: 0 6px; }
+[aria-expanded="true"] .site-nav__bars { background: transparent; }
+[aria-expanded="true"] .site-nav__bars::before { translate: 0 0; rotate: 45deg; }
+[aria-expanded="true"] .site-nav__bars::after  { translate: 0 0; rotate: -45deg; }
+
+.site-nav__list {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: clamp(.1rem, 1.4vw, .6rem);
+  margin: 0; padding: 0; list-style: none;
+}
+.site-nav__list a {
+  display: block; padding: .9rem clamp(.5rem, 1.2vw, .85rem);
+  color: var(--ink-strong); text-decoration: none;
+  text-transform: uppercase; letter-spacing: 1px;
+  font-size: clamp(.85rem, .78rem + .3vw, 1rem);
+  transition: opacity .3s var(--ease), color .3s var(--ease);
+}
+.site-nav__list a:hover { opacity: .62; }
+.site-nav__book { color: var(--accent) !important; }
+
+/* ============================================================
+   Page shell
+   ============================================================ */
+main {
+  width: min(var(--sheet-w), 100%);
+  margin-inline: auto;
+  padding: 0 var(--gutter) 3rem;
+}
+
+.page-title,
+.band__title {
+  margin: 3.5rem 0 1.5rem;
+  color: var(--heading);
+  font-size: var(--step-2);
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.page-title { margin-top: 1.5rem; }
+
+.prose { color: var(--ink-soft); }
+.prose p { margin: 0 0 1.1em; }
+.prose p:last-child { margin-bottom: 0; }
+.prose a { color: var(--accent); text-underline-offset: .18em; }
+.prose a:hover { color: var(--ink-strong); }
+.prose .fact { font-weight: 400; color: var(--heading); }
+.prose h2, .prose h3 {
+  margin: 2rem 0 .6rem; color: var(--heading);
+  font-size: var(--step-1); font-weight: 400; letter-spacing: .01em;
+}
+
+/* ============================================================
+   Rooms
+   ============================================================ */
+.rooms { display: grid; gap: clamp(2.5rem, 6vw, 4.5rem); margin-top: 1rem; }
+
+.room {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  scroll-margin-top: 2rem;
+}
+.room--flip > .room__media { order: 2; }
+
+.room__media { display: grid; justify-items: center; gap: 1rem; width: max-content; }
+
+/* --- hero circle + decorations --- */
+.room__hero {
+  position: relative; margin: 0;
+  width: var(--hero); aspect-ratio: 1;
+  display: grid; place-items: center;
+}
+.room__hero > a {
+  display: block; width: 100%; aspect-ratio: 1;
+  border-radius: 50%; overflow: hidden; position: relative; z-index: 3;
+  box-shadow: 0 10px 34px rgb(0 0 0 / .16);
+  transition: scale .5s var(--ease);
+}
+.room__hero > a:hover { scale: 1.03; }
+.room__hero-img { width: 100%; height: 100%; object-fit: cover; }
+
+.room__mandala {
+  position: absolute; inset: 4%; z-index: 2;
+  background: url("{{ $mandala }}") center / contain no-repeat;
+  opacity: .85;
+  animation: spin 200s linear infinite;
+}
+
+/* Decoration layers: the old theme hand-placed every layer per room in
+   pixels. Here they sit in a ring around the circle and drift outward
+   on hover — same character, but it survives new rooms and new sizes. */
+.room__anim { position: absolute; inset: 0; z-index: 1; }
+.room__anim-layer {
+  position: absolute; inset: 6%;
+  background: center / contain no-repeat;
+  transition: translate .8s var(--ease), rotate .8s var(--ease), opacity .5s var(--ease);
+}
+.room__anim-layer--1 { --dx: -46%; --dy: -6%; }
+.room__anim-layer--2 { --dx:  44%; --dy: -22%; }
+.room__anim-layer--3 { --dx:  50%; --dy:  20%; }
+.room__anim-layer--4 { --dx: -40%; --dy:  26%; }
+.room__anim-layer--5 { --dx:  10%; --dy: -48%; }
+.room__anim-layer--6 { --dx:  -8%; --dy:  48%; }
+
+.room:hover .room__anim-layer,
+.room:focus-within .room__anim-layer {
+  translate: var(--dx) var(--dy);
+  rotate: 4deg;
+}
+
+/* --- thumbnails --- */
+.room__thumbs { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; justify-content: center; }
+
+.thumbs { display: flex; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.thumb {
+  display: block; width: 22px; height: 22px; border-radius: 50%;
+  overflow: hidden; box-shadow: 0 0 0 1px rgb(0 0 0 / .08);
+  transition: scale .25s var(--ease), box-shadow .25s var(--ease);
+}
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.thumb:hover { scale: 1.35; box-shadow: 0 2px 10px rgb(0 0 0 / .3); }
+
+.thumbs__more {
+  padding: 0; border: 0; background: none; color: var(--ink-soft);
+  font: inherit; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase;
+  cursor: pointer; transition: color .25s var(--ease);
+}
+.thumbs__more:hover { color: var(--accent); }
+
+/* --- room text --- */
+.room__text { min-width: 0; }
+.room__title {
+  display: inline; margin: 0 .55em 0 0;
+  color: #000; font-size: var(--step-1); font-weight: 400;
+}
+.room__body { display: inline; }
+.room__body > p:first-child { display: inline; }
+
+/* ============================================================
+   Generic bands (food / activities / partners / contact)
+   ============================================================ */
+.band { scroll-margin-top: 1.5rem; }
+.band__lead { text-align: center; color: var(--ink-soft); margin: 0 0 2rem; }
+.band__body { max-width: 62ch; margin-inline: auto; }
+
+.gallery-grid {
+  display: grid; gap: clamp(.75rem, 2vw, 1.25rem); margin-top: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+}
+.gallery-grid__item {
+  display: block; overflow: hidden; border-radius: var(--radius);
+  box-shadow: 0 6px 24px rgb(0 0 0 / .12);
+}
+.gallery-grid__item img {
+  width: 100%; aspect-ratio: 3 / 2; object-fit: cover;
+  transition: scale .6s var(--ease);
+}
+.gallery-grid__item:hover img { scale: 1.05; }
+
+/* --- partners --- */
+.partners {
+  display: grid; gap: clamp(1rem, 3vw, 2rem);
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  margin: 0; padding: 0; list-style: none;
+}
+.partner__link {
+  display: grid; gap: .6rem; justify-items: center; text-align: center;
+  text-decoration: none; color: var(--ink-soft);
+  padding: .75rem; border-radius: var(--radius);
+  transition: background .25s var(--ease);
+}
+.partner__link:hover { background: rgb(255 255 255 / .7); }
+.partner__logo {
+  display: grid; place-items: center; width: 100%; height: 7rem;
+}
+.partner__logo img {
+  max-width: 100%; max-height: 100%; width: auto; height: auto;
+  object-fit: contain;
+  transition: scale .3s var(--ease);
+}
+.partner__link:hover .partner__logo img { scale: 1.06; }
+.partner__name { font-size: .9rem; }
+.partner__link:hover .partner__name { color: var(--accent); }
+
+/* --- contact --- */
+.contact-cols {
+  display: grid; gap: clamp(1.25rem, 3vw, 2rem); margin: 2.5rem auto 0;
+  max-width: 62ch;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+.contact-col h3 {
+  margin: 0 0 .4rem; color: var(--heading);
+  font-size: var(--step-1); font-weight: 400;
+}
+.contact-col .prose p { margin: 0; }
+
+.map {
+  position: relative; display: block; margin-top: 2.5rem;
+  border-radius: var(--radius); overflow: hidden; text-decoration: none;
+}
+.map__img { width: 100%; }
+.map__pin {
+  position: absolute; left: 50%; top: 46%; width: 46px; height: 46px;
+  translate: -50% -100%;
+  background: url("{{ $feather }}") center / contain no-repeat;
+  animation: bob 3.5s ease-in-out infinite;
+}
+@keyframes bob { 50% { translate: -50% -115%; } }
+.map__label {
+  position: absolute; right: .75rem; bottom: .75rem;
+  padding: .45rem .8rem; border-radius: 999px;
+  background: rgb(255 255 255 / .92); color: var(--ink-strong);
+  font-size: .8rem; letter-spacing: .04em;
+}
+
+/* ============================================================
+   Footer + back-to-top
+   ============================================================ */
+.site-footer {
+  width: min(var(--sheet-w), 100%); margin-inline: auto;
+  padding: 2rem var(--gutter) 3rem; text-align: center;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-soft); font-size: .9rem;
+}
+.site-footer__links { display: flex; flex-wrap: wrap; gap: 1.25rem; justify-content: center; margin: 0 0 .75rem; }
+.site-footer a { text-decoration: none; }
+.site-footer a:hover { color: var(--accent); }
+.site-footer__credit { margin: 0; opacity: .7; font-size: .8rem; }
+
+.to-top {
+  position: fixed; right: clamp(1rem, 3vw, 2.5rem); bottom: clamp(1rem, 3vw, 2.5rem);
+  z-index: 50; display: grid; place-items: center;
+  width: clamp(44px, 8vw, 56px); aspect-ratio: 1;
+  border: 0; border-radius: 18px; cursor: pointer;
+  background: var(--accent-2); color: #fff; opacity: .9;
+  transition: opacity .25s var(--ease), translate .25s var(--ease);
+}
+.to-top[hidden] { display: none; }
+.to-top:hover { opacity: 1; translate: 0 -3px; }
+
+/* ============================================================
+   Lightbox
+   ============================================================ */
+.lightbox {
+  width: min(100vw, 100%); max-width: none; height: 100dvh; max-height: none;
+  margin: 0; padding: 0; border: 0; background: transparent; color: #fff;
+  overscroll-behavior: contain;
+}
+.lightbox::backdrop { background: rgb(12 10 10 / .92); }
+.lightbox:not([open]) { display: none; }
+
+.lightbox__stage {
+  display: grid; place-items: center;
+  width: 100%; height: 100%; padding: clamp(2.5rem, 8vw, 4.5rem);
+}
+.lightbox__img {
+  max-width: 100%; max-height: 100%;
+  width: auto; height: auto; object-fit: contain;
+  border-radius: 6px; box-shadow: 0 12px 60px rgb(0 0 0 / .5);
+}
+.lightbox__caption {
+  position: absolute; left: 50%; bottom: 1rem; translate: -50% 0; margin: 0;
+  padding: .4rem .9rem; border-radius: 999px; background: rgb(0 0 0 / .5);
+  font-size: .85rem; letter-spacing: .04em;
+}
+
+.lightbox__btn {
+  position: absolute; display: grid; place-items: center;
+  width: 3rem; height: 3rem; border: 0; border-radius: 50%; cursor: pointer;
+  background: rgb(255 255 255 / .12); color: #fff;
+  transition: background .2s var(--ease), scale .2s var(--ease);
+}
+.lightbox__btn:hover { background: rgb(255 255 255 / .26); scale: 1.06; }
+.lightbox__btn--prev  { left: .75rem;  top: 50%; translate: 0 -50%; }
+.lightbox__btn--next  { right: .75rem; top: 50%; translate: 0 -50%; }
+.lightbox__btn--close { right: .75rem; top: .75rem; }
+.lightbox[data-single] .lightbox__btn--prev,
+.lightbox[data-single] .lightbox__btn--next { display: none; }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 860px) {
+  .room {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 1.25rem;
+  }
+  .room--flip > .room__media { order: 0; }
+  .room__text { text-align: left; max-width: 42rem; }
+}
+
+@media (max-width: 640px) {
+  .site-nav__toggle { display: flex; }
+  .site-nav__list {
+    display: none; flex-direction: column; align-items: stretch;
+    gap: 0; margin-top: .75rem;
+    border: 1px solid var(--rule); border-radius: var(--radius);
+    background: #fff; overflow: hidden;
+  }
+  .site-nav__list.is-open { display: flex; }
+  .site-nav__list li + li { border-top: 1px solid var(--rule); }
+  .site-nav__list a { text-align: center; }
+  .backdrop__sheet { background: rgb(255 255 255 / .96); }
+  .room__text { text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .room:hover .room__anim-layer,
+  .room:focus-within .room__anim-layer { translate: 0 0; rotate: 0deg; }
+}
+
+@media print {
+  .backdrop, .to-top, .site-nav, .lightbox, .map__pin { display: none !important; }
+  body { background: #fff; }
+}

@@ -1,0 +1,159 @@
+{{ define "main" }}
+{{- $d := index hugo.Data site.Language.Lang "site" -}}
+
+<h1 class="page-title">{{ $d.meta.heading }}</h1>
+
+{{- /* ============================ RUUMID ============================ */ -}}
+<section id="ruumid" class="rooms" aria-labelledby="ruumid-h">
+  <h2 class="visually-hidden" id="ruumid-h">{{ (index (where $d.nav "id" "1") 0).label }}</h2>
+
+  {{- range $i, $p := where site.RegularPages "Section" "ruumid" }}
+  {{- $flip := eq (mod $i 2) 1 }}
+  <article class="room{{ if $flip }} room--flip{{ end }}" id="{{ $p.Slug }}">
+
+    <div class="room__media">
+      <figure class="room__hero">
+        <a href="{{ (resources.Get $p.Params.hero).RelPermalink }}"
+           data-lightbox="{{ $p.Slug }}" data-caption="{{ $p.Title }}">
+          {{ partial "img.html" (dict
+              "src" $p.Params.hero
+              "alt" $p.Title
+              "class" "room__hero-img"
+              "sizes" "(max-width: 720px) 86vw, 34vw"
+              "widths" (slice 400 600 900)
+              "loading" (cond (eq $i 0) "eager" "lazy")
+              "fetchpriority" (cond (eq $i 0) "high" "")) }}
+        </a>
+        <span class="room__mandala" aria-hidden="true"></span>
+        {{- with $p.Params.animations }}
+        <span class="room__anim" aria-hidden="true">
+          {{- range $n, $a := . }}
+          {{- with resources.Get $a }}
+          <span class="room__anim-layer room__anim-layer--{{ add $n 1 }}"
+                style="background-image:url('{{ .RelPermalink }}')"></span>
+          {{- end }}
+          {{- end }}
+        </span>
+        {{- end }}
+      </figure>
+
+      {{- with $p.Params.gallery }}
+      <div class="room__thumbs">
+        <ul class="thumbs">
+          {{- range $n, $g := . }}
+          {{- $res := resources.Get $g }}
+          {{- if $res }}
+          {{- $t := $res.Fill "120x120 Center webp q80" }}
+          <li>
+            <a class="thumb" href="{{ $res.RelPermalink }}"
+               data-lightbox="{{ $p.Slug }}" data-caption="{{ $p.Title }}"
+               aria-label="{{ printf (i18n "image_of") (add $n 2) (add (len .) 1) }} — {{ $p.Title }}">
+              <img src="{{ $t.RelPermalink }}" width="120" height="120" alt="" loading="lazy" decoding="async">
+            </a>
+          </li>
+          {{- end }}
+          {{- end }}
+        </ul>
+        <button class="thumbs__more" type="button" data-open-lightbox="{{ $p.Slug }}">
+          {{ i18n "photos" }}
+        </button>
+      </div>
+      {{- end }}
+    </div>
+
+    <div class="room__text">
+      <h3 class="room__title">{{ $p.Title }}</h3>
+      <div class="room__body prose">{{ $p.Content }}</div>
+    </div>
+  </article>
+  {{- end }}
+</section>
+
+{{- /* ========================== TOITLUSTUS ========================== */ -}}
+<section id="toitlustus" class="band band--food" aria-labelledby="toitlustus-h">
+  <h2 class="band__title" id="toitlustus-h">{{ $d.toitlustus.title }}</h2>
+  <p class="band__lead">
+    {{- $lead := $d.toitlustus.lead -}}
+    {{- $mail := site.Params.email -}}
+    {{- if in $lead $mail -}}
+      {{ index (split $lead $mail) 0 }}<a href="mailto:{{ $mail }}">{{ $mail }}</a>{{ index (split $lead $mail) 1 }}
+    {{- else -}}
+      {{ $lead }}
+    {{- end -}}
+  </p>
+  <div class="gallery-grid gallery-grid--2">
+    {{- range $n, $img := $d.toitlustus.images }}
+    {{- $res := resources.Get $img }}
+    {{- if $res }}
+    <a class="gallery-grid__item" href="{{ $res.RelPermalink }}"
+       data-lightbox="toitlustus" data-caption="{{ $d.toitlustus.title }}">
+      {{ partial "img.html" (dict "src" $img "alt" (printf "%s %d" $d.toitlustus.title (add $n 1))
+          "sizes" "(max-width: 720px) 92vw, 46vw" "widths" (slice 480 760 1100)) }}
+    </a>
+    {{- end }}
+    {{- end }}
+  </div>
+</section>
+
+{{- /* ========================== TEGEVUSED =========================== */ -}}
+<section id="tegevused" class="band" aria-labelledby="tegevused-h">
+  <h2 class="band__title" id="tegevused-h">{{ $d.tegevused.title }}</h2>
+  <div class="band__body prose">{{ $d.tegevused.body | safeHTML }}</div>
+  <div class="gallery-grid gallery-grid--2">
+    {{- range $n, $img := $d.tegevused.images }}
+    {{- $res := resources.Get $img }}
+    {{- if $res }}
+    <a class="gallery-grid__item" href="{{ $res.RelPermalink }}"
+       data-lightbox="tegevused" data-caption="{{ $d.tegevused.title }}">
+      {{ partial "img.html" (dict "src" $img "alt" (printf "%s %d" $d.tegevused.title (add $n 1))
+          "sizes" "(max-width: 720px) 92vw, 46vw" "widths" (slice 480 760 1100)) }}
+    </a>
+    {{- end }}
+    {{- end }}
+  </div>
+</section>
+
+{{- /* ========================== PARTNERID =========================== */ -}}
+<section id="partnerid" class="band" aria-labelledby="partnerid-h">
+  <h2 class="band__title" id="partnerid-h">{{ $d.partnerid.title }}</h2>
+  <ul class="partners">
+    {{- range $d.partnerid.items }}
+    {{- $name := .name }}
+    <li class="partner">
+      <a class="partner__link"{{ with .url }} href="{{ . }}" target="_blank" rel="noopener"{{ end }}>
+        <span class="partner__logo{{ if .contain }} partner__logo--contain{{ end }}">
+          {{- with resources.Get .logo }}
+          {{- $l := .Fit "320x240 webp q85" }}
+          <img src="{{ $l.RelPermalink }}" width="{{ $l.Width }}" height="{{ $l.Height }}"
+               alt="{{ $name }}" loading="lazy" decoding="async">
+          {{- end }}
+        </span>
+        <span class="partner__name">{{ $name }}</span>
+      </a>
+    </li>
+    {{- end }}
+  </ul>
+</section>
+
+{{- /* =========================== KONTAKT ============================ */ -}}
+<section id="kontakt" class="band band--contact" aria-labelledby="kontakt-h">
+  <h2 class="band__title" id="kontakt-h">{{ $d.kontakt.title }}</h2>
+  <div class="band__body prose">{{ $d.kontakt.intro | safeHTML }}</div>
+
+  <div class="contact-cols">
+    {{- range $d.kontakt.columns }}
+    <div class="contact-col">
+      <h3>{{ .title }}</h3>
+      <div class="prose">{{ .body | safeHTML }}</div>
+    </div>
+    {{- end }}
+  </div>
+
+  <a class="map" href="{{ $d.kontakt.mapUrl }}" target="_blank" rel="noopener">
+    {{ partial "img.html" (dict "src" "img/theme/map.png" "alt" (i18n "view_on_map")
+        "class" "map__img" "sizes" "(max-width: 720px) 96vw, 900px" "widths" (slice 600 900 1200)) }}
+    <span class="map__pin" aria-hidden="true"></span>
+    <span class="map__label">{{ i18n "view_on_map" }}</span>
+  </a>
+</section>
+{{ end }}

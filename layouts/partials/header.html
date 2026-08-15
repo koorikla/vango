@@ -1,0 +1,59 @@
+{{- $d := index hugo.Data site.Language.Lang "site" -}}
+{{- $sections := slice
+  (dict "id" "ruumid" "label" (index (where $d.nav "id" "1") 0).label)
+  (dict "id" "toitlustus" "label" (index (where $d.nav "id" "2") 0).label)
+  (dict "id" "tegevused" "label" (index (where $d.nav "id" "5") 0).label)
+  (dict "id" "partnerid" "label" (index (where $d.nav "id" "3") 0).label)
+  (dict "id" "kontakt" "label" (index (where $d.nav "id" "4") 0).label)
+-}}
+<header class="site-header">
+  <div class="site-header__top">
+    <a class="social social--fb" href="{{ site.Params.facebook }}" target="_blank" rel="noopener"
+       aria-label="Facebook ({{ i18n "opens_new_window" }})">
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/>
+      </svg>
+    </a>
+
+    <nav class="langs" aria-label="Language">
+      <ul>
+        {{- range hugo.Sites }}
+        {{- $s := . }}
+        <li>
+          {{- if eq $s.Language.Lang site.Language.Lang }}
+          <span aria-current="true">{{ $s.Language.Label }}</span>
+          {{- else }}
+          <a href="{{ $s.Home.RelPermalink }}" hreflang="{{ $s.Language.Locale }}">{{ $s.Language.Label }}</a>
+          {{- end }}
+        </li>
+        {{- end }}
+      </ul>
+    </nav>
+  </div>
+
+  <a class="logo" href="{{ site.Home.RelPermalink }}">
+    <span class="logo__halo" aria-hidden="true"></span>
+    {{- with resources.Get "img/theme/logo500.png" }}
+    {{- $l := .Resize "260x webp q85" }}
+    <img class="logo__mark" src="{{ $l.RelPermalink }}" width="{{ $l.Width }}" height="{{ $l.Height }}"
+         alt="{{ site.Title }}" fetchpriority="high" decoding="async">
+    {{- end }}
+  </a>
+
+  <nav class="site-nav" aria-label="{{ i18n "menu" }}">
+    <button class="site-nav__toggle" type="button" aria-expanded="false" aria-controls="site-menu">
+      <span class="site-nav__bars" aria-hidden="true"></span>
+      <span>{{ i18n "menu" }}</span>
+    </button>
+    <ul class="site-nav__list" id="site-menu">
+      {{- range $sections }}
+      <li><a href="#{{ .id }}">{{ .label }}</a></li>
+      {{- end }}
+      <li>
+        <a class="site-nav__book" href="{{ $d.booking.url }}" target="_blank" rel="noopener">
+          {{ $d.booking.label }}
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>

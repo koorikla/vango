@@ -1,0 +1,140 @@
+{
+  "meta": {
+    "seoTitle": "Vango Imedemaa - Vango Imedemaa, Vango puhkeküla, puhkeküla, turismitalu, majutus, pulmad, Pärnumaal Vango Holiday Village puhkeküla : Vango Imedemaa",
+    "description": "#Majutus, #suvepäevad ja #pulmad Pärnumaa metsade vaikuses koos tervistava #sauna ja #kümblustünni või unikaalse ja eheda #suitsusauna külastusega.",
+    "heading": "Vango Imedemaa",
+    "ogImage": "img/uploads/2015-01-DJI_0536-scaled-e1620747320239.jpg"
+  },
+  "nav": [
+    {
+      "id": "1",
+      "label": "Ruumid"
+    },
+    {
+      "id": "2",
+      "label": "Toitlustus"
+    },
+    {
+      "id": "5",
+      "label": "Tegevused"
+    },
+    {
+      "id": "3",
+      "label": "Partnerid"
+    },
+    {
+      "id": "4",
+      "label": "Kontakt"
+    }
+  ],
+  "booking": {
+    "url": "http://www.freetobook.com/affiliates/reservation.php?w_id=20891&w_tkn=QxNMlll1szLRpXxvf3T5wE4gsHN4caXSouH6nClTpxAxGLp9Tse0OhXHgnSPc",
+    "label": "Broneeri"
+  },
+  "toitlustus": {
+    "title": "Toitlustus",
+    "lead": "Toitlustuse küsimustes palun kirjuta info@vango.ee",
+    "images": [
+      "img/uploads/2020-04-food1.jpg",
+      "img/uploads/2020-04-food2opt-1.jpg"
+    ]
+  },
+  "tegevused": {
+    "title": "Tegevused",
+    "body": "<p>Imedemaa metsad pakuvad pelgupaika kultuuripõgenikele ja ajalõksu kinni jäänud rahmeldajatele. Siin võid julgelt unustada vilkuvad ekraanid kotipõhja ja kuulata öölindude huikeid või korjata korvi ääreni puravikke täis. Siit leiadki need sirelid, mida kirjeldab Valdur Mikita, öeldes, et täiuslik elamise tunne on see, mida kogeb inimene, langedes lõpmatult aeglaselt tagurpidi sirelitesse, puust mõõk käes. Mõni jääb kohe pikemaks ja ütleb, et kaua oma aega oodanud lõputöö sai siin vaikuses märkamatult valmis, justkui oleks haldjarahva käsi mängus.</p><p>Mets paneb kopsud ja mõtted teistmoodi tööle igal aastaajal. Seminaril kangeks istutud jalad saab elule turgutada matkarajal, mida on siin mitut masti: Rae järve ja Kõveri matkarada on lähimad, Laiksaare lammimetsa õpperada, Tolkuse ja Nigula rabarajad veidi eemal. Hea meelega viime teid metsa, paneme matkale kaasa piknikukorvi ja sooja joogi termosed ning aitame tavalise taga näha erilist või õpetame selgeks mõne linnu laulu.</p><p>3-4 tunnise&nbsp;meelelahutuse saab korraldada ka Vango muruplatsidel ja tiikide vahel 3D viburajal jahti pidades, gepsides, fotojahti või disc-golfi mängides. Enda seltskonnale sobiva variandi leidmiseks kiika koostööpartnerite veebilehti.</p><p>Kui tõid sõbrad kaasa ja teil on võimalik loodusele pühendada terve päev või paar, soovitame Livonia Matkade kanuumatka, mis viib üle piiri Salaci jõele ja liivakoobastesse. Kogenud matkajuht viib teid bussiga meie õue pealt jõele ja toob pärast otse kuuma sauna.</p><p>Küsi pakkumist <a href=\"mailto:info@vango.ee\" target=\"_blank\" rel=\"noopener\">info@vango.ee</a> või otse koostööpartneritelt.</p>",
+    "images": [
+      "img/uploads/2020-04-kanuu-s2-1.jpg",
+      "img/uploads/2020-04-raba2-s2-2.jpg",
+      "img/uploads/2024-09-pulm2024-scaled.jpg",
+      "img/uploads/2024-09-vibulaskmine-scaled-e1726393335441.jpg"
+    ]
+  },
+  "partnerid": {
+    "title": "Partnerid",
+    "items": [
+      {
+        "name": "Livonia Matkad",
+        "url": "http://www.livoniamatkad.ee/",
+        "logo": "img/uploads/2020-04-livonia-1.jpg",
+        "contain": false
+      },
+      {
+        "name": "Seikluspartner",
+        "url": "https://www.facebook.com/seikluspartner/",
+        "logo": "img/uploads/2020-04-seikluspartner-1.png",
+        "contain": true
+      },
+      {
+        "name": "360 kraadi",
+        "url": "https://360.ee",
+        "logo": "img/uploads/2021-05-360_logo-removebg-preview.png",
+        "contain": false
+      },
+      {
+        "name": "Allikukivi veinimõis",
+        "url": "https://www.allikukivi.ee",
+        "logo": "img/uploads/2017-11-allikukivi.png",
+        "contain": false
+      },
+      {
+        "name": "Volli Grill",
+        "url": "http://volligrill.ee/",
+        "logo": "img/uploads/2020-04-volli.png",
+        "contain": false
+      },
+      {
+        "name": "Saunatee.ee",
+        "url": "https://www.saunatee.ee",
+        "logo": "img/uploads/2021-05-Saunatee_logo-1.jpg",
+        "contain": false
+      },
+      {
+        "name": "Eesti Maaturism",
+        "url": "http://www.maaturism.ee/",
+        "logo": "img/uploads/2020-04-maaturism.png",
+        "contain": true
+      },
+      {
+        "name": "Romantiline Rannatee",
+        "url": "http://www.rannatee.ee/",
+        "logo": "img/uploads/2016-02-R-Rannatee_logo.png",
+        "contain": true
+      },
+      {
+        "name": "Maagiline Maailm",
+        "url": "https://www.facebook.com/siseminelaps/",
+        "logo": "img/uploads/2024-09-MaagilineMaailm_Gold_logo_Mockup-e1726391474810.jpg",
+        "contain": false
+      },
+      {
+        "name": "Elalmusmängud",
+        "url": "https://elamusmangud.ee/",
+        "logo": "img/uploads/2025-02-Elamusmangude-logo.png",
+        "contain": false
+      }
+    ]
+  },
+  "kontakt": {
+    "title": "Kontakt",
+    "intro": "<p>Hinnapakkumise saamiseks kirjuta ning too muuhulgas välja Sind huvitavad kuupäevad ning orienteeruv rahvaarv. Samuti tutvusta oma toitlustuseelistusi. Meie <strong><a href=\"/docs/broneerimistingimused.pdf\">broneerimistingimused ja kodukord on kirjas siin</a></strong>.<br /> Käsilolevatest <strong><a href=\"/docs/vango_projektid.pdf\">projektidest ja toetustest loe siit</a>.</strong></p><h2>Saabumisjuhend</h2><p>Pärnu poolt suunaga Ikla poole: sõida ca 7 km Pärnust välja, kuni vasakule suunaval sildil Valga 126 km, Viljandi 78 km ning Kilingi-Nõmme 30 km. Olles sealt vasakule keeranud, sõida 19,5 km edasi. Seejärel näitab paremale Häädemeeste 24 km ja Tallinn—Pärnu—Ikla mnt 23 km. Pööra sealt paremale, sõida umbes 5,5 km Vangu bussipeatuseni ja pööra pärast seda paremale hoovi.</p><p>Ikla poolt suunaga Pärnu poole: Circle K Arumetsa tankla juurest keera paremale Kilingi-Nõmme ja Valga—Uulu mnt peale ning sõida otse 17 km. Jääme vasakule vahetult enne Vangu bussipeatust.</p>",
+    "columns": [
+      {
+        "title": "Aadress",
+        "body": "<p>Vango metsavahi koht</p><p>Saarde vald, Laiksaare küla</p><p>Pärnu maakond</p>"
+      },
+      {
+        "title": "Kontaktid",
+        "body": "<p>e-post: info@vango.ee</p><p>telefon: 516 3259 / 506 3365</p><p>Facebook: <a href=\"https://www.facebook.com/vangoimedemaa\" target=\"_blank\" rel=\"noopener\">Link</a></p><p>Instagram: <a href=\"https://www.instagram.com/vangotalu/\" target=\"_blank\" rel=\"noopener\">Link</a></p>"
+      },
+      {
+        "title": "Koordinaadid",
+        "body": "<p>N 58°07’53”</p><p>E 24°45’45”</p>"
+      }
+    ],
+    "mapUrl": "https://www.google.com/maps/place/58%C2%B007'55.2%22N+24%C2%B045'36.0%22E/@58.1279662,24.7532194,12z/data=!4m2!3m1!1s0x0:0x0?hl=en"
+  },
+  "credit": {
+    "url": "http://www.martinmarss.ee/",
+    "label": "Web by Märss"
+  }
+}

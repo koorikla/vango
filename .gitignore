@@ -1,0 +1,18 @@
+# Hugo build output
+/public/
+/resources/
+.hugo_build.lock
+
+# Node (only used for the Playwright E2E tests)
+/node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/.playwright/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
