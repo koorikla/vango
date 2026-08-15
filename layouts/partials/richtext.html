@@ -1,0 +1,18 @@
+{{- /*
+  Render stored HTML (lifted from the old WordPress site) safely.
+
+  Those fragments contain root-absolute links such as href="/docs/x.pdf".
+  That is correct when the site is served from a domain root, but breaks when
+  it is served from a subpath (GitHub Pages serves this repo at /vango/).
+  Rewrite any single-leading-slash href/src through the configured baseURL so
+  the same content works on both hosts.
+
+  Takes the HTML string, returns rendered HTML.
+*/ -}}
+{{- $s := . -}}
+{{- /* "" at a domain root, "/vango" when baseURL is https://host/vango/ */ -}}
+{{- $base := strings.TrimSuffix "/" (urls.Parse site.BaseURL).Path -}}
+{{- if $base -}}
+  {{- $s = replaceRE `((?:href|src)=")/([^/"])` (printf `${1}%s/${2}` $base) $s -}}
+{{- end -}}
+{{- $s | safeHTML -}}

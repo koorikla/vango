@@ -98,6 +98,9 @@ for (const [lang, cfg] of Object.entries(LANGS)) {
       const partners = page.locator('.partner');
       await expect(partners).toHaveCount(PARTNER_COUNT);
 
+      await partners.last().scrollIntoViewIfNeeded();
+      await page.waitForLoadState('networkidle');
+
       const count = await partners.count();
       for (let i = 0; i < count; i++) {
         const name = await partners.nth(i).locator('.partner__name').innerText();
@@ -134,6 +137,8 @@ for (const [lang, cfg] of Object.entries(LANGS)) {
       });
       const broken = await page.evaluate(() =>
         [...document.images]
+          // the lightbox <img> is an empty placeholder until it is opened
+          .filter((i) => i.getAttribute('src'))
           .filter((i) => !i.complete || i.naturalWidth === 0)
           .map((i) => i.currentSrc || i.src)
       );
@@ -166,11 +171,16 @@ test.describe('navigation', () => {
     for (const id of SECTIONS) {
       await page.locator(`.site-nav__list a[href="#${id}"]`).click();
       await expect(page).toHaveURL(new RegExp(`#${id}$`));
-      const inView = await page.locator(`#${id}`).evaluate((el) => {
-        const r = el.getBoundingClientRect();
-        return r.top < window.innerHeight && r.bottom > 0;
-      });
-      expect(inView, `#${id} scrolled into view`).toBe(true);
+      // smooth scrolling is animated — poll until it settles
+      await expect
+        .poll(
+          () => page.locator(`#${id}`).evaluate((el) => {
+            const r = el.getBoundingClientRect();
+            return r.top < window.innerHeight && r.bottom > 0;
+          }),
+          { message: `#${id} scrolled into view`, timeout: 5000 }
+        )
+        .toBe(true);
       if (isMobile) await page.locator('.site-nav__toggle').click();
     }
   });

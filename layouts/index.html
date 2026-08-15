@@ -29,8 +29,12 @@
         <span class="room__anim" aria-hidden="true">
           {{- range $n, $a := . }}
           {{- with resources.Get $a }}
+          {{- /* The original theme hard-coded each layer's size in pixels
+                 against a 235px circle — which is exactly each PNG's natural
+                 size. Pass those through so the CSS can scale them with the
+                 circle instead of needing a rule per layer per room. */}}
           <span class="room__anim-layer room__anim-layer--{{ add $n 1 }}"
-                style="background-image:url('{{ .RelPermalink }}')"></span>
+                style="--w:{{ .Width }};--h:{{ .Height }};background-image:url('{{ .RelPermalink }}')"></span>
           {{- end }}
           {{- end }}
         </span>
@@ -63,7 +67,7 @@
 
     <div class="room__text">
       <h3 class="room__title">{{ $p.Title }}</h3>
-      <div class="room__body prose">{{ $p.Content }}</div>
+      <div class="room__body prose">{{ partial "richtext.html" $p.Content }}</div>
     </div>
   </article>
   {{- end }}
@@ -98,7 +102,7 @@
 {{- /* ========================== TEGEVUSED =========================== */ -}}
 <section id="tegevused" class="band" aria-labelledby="tegevused-h">
   <h2 class="band__title" id="tegevused-h">{{ $d.tegevused.title }}</h2>
-  <div class="band__body prose">{{ $d.tegevused.body | safeHTML }}</div>
+  <div class="band__body prose">{{ partial "richtext.html" $d.tegevused.body }}</div>
   <div class="gallery-grid gallery-grid--2">
     {{- range $n, $img := $d.tegevused.images }}
     {{- $res := resources.Get $img }}
@@ -138,13 +142,13 @@
 {{- /* =========================== KONTAKT ============================ */ -}}
 <section id="kontakt" class="band band--contact" aria-labelledby="kontakt-h">
   <h2 class="band__title" id="kontakt-h">{{ $d.kontakt.title }}</h2>
-  <div class="band__body prose">{{ $d.kontakt.intro | safeHTML }}</div>
+  <div class="band__body prose">{{ partial "richtext.html" $d.kontakt.intro }}</div>
 
   <div class="contact-cols">
     {{- range $d.kontakt.columns }}
     <div class="contact-col">
       <h3>{{ .title }}</h3>
-      <div class="prose">{{ .body | safeHTML }}</div>
+      <div class="prose">{{ partial "richtext.html" .body }}</div>
     </div>
     {{- end }}
   </div>

@@ -18,7 +18,7 @@
   --accent:     #f45a4c;
   --accent-2:   #f5a623;
   --page:       #f7f7f7;
-  --sheet:      rgba(255, 255, 255, .92);
+  --sheet:      rgba(255, 255, 255, .95);
   --rule:       rgba(65, 65, 65, .14);
 
   --sheet-w:    1060px;
@@ -92,16 +92,19 @@ a { color: inherit; }
 /* ============================================================
    Watercolour backdrop
    ============================================================ */
-.backdrop { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.backdrop { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
 
+/* Fixed 1828px-wide centred artwork (as the original theme had it) rather
+   than `cover`, so the colour always stays outside the reading column
+   instead of washing across it on wide screens. */
 .backdrop__colour {
   position: absolute; inset: 0;
-  background: url("{{ $colorBg }}") center top / cover no-repeat, var(--page);
+  background: url("{{ $colorBg }}") center top / 1828px 100% no-repeat, var(--page);
 }
 .backdrop__colour::after {
   content: ""; position: absolute; inset: 0;
   background: url("{{ $vinesUp }}") center top / 1400px auto repeat-y;
-  opacity: .22;
+  opacity: .15;
 }
 /* The white reading sheet the content sits on. */
 .backdrop__sheet {
@@ -124,9 +127,9 @@ a { color: inherit; }
 .site-header::before {
   content: ""; position: absolute; z-index: -1;
   top: 0; left: 50%; translate: -50% 0;
-  width: 1263px; max-width: 130%; aspect-ratio: 1263 / 261;
-  background: url("{{ $headerBg }}") center / contain no-repeat;
-  opacity: .85; pointer-events: none;
+  width: min(1263px, 100%); aspect-ratio: 1263 / 261;
+  background: url("{{ $headerBg }}") center top / contain no-repeat;
+  opacity: .38; pointer-events: none;
 }
 
 .site-header__top {
@@ -283,27 +286,39 @@ main {
   animation: spin 200s linear infinite;
 }
 
-/* Decoration layers: the old theme hand-placed every layer per room in
-   pixels. Here they sit in a ring around the circle and drift outward
-   on hover — same character, but it survives new rooms and new sizes. */
+/* Decoration layers. The old theme hand-placed every layer of every room
+   in absolute pixels (~120 rules). Here each layer gets a resting offset
+   so it peeks out from behind the photo, and flies further out on hover —
+   the same character, but it survives new rooms and any circle size. */
 .room__anim { position: absolute; inset: 0; z-index: 1; }
 .room__anim-layer {
-  position: absolute; inset: 6%;
+  position: absolute; top: 50%; left: 50%;
+  /* --w/--h are the artwork's natural pixel size, which the original theme
+     used verbatim against a 235px circle. Scaling by --hero/235 keeps every
+     ornament in proportion at any circle size. */
+  width:  calc(var(--w) / 235 * var(--hero));
+  height: calc(var(--h) / 235 * var(--hero));
   background: center / contain no-repeat;
-  transition: translate .8s var(--ease), rotate .8s var(--ease), opacity .5s var(--ease);
+  translate:
+    calc(-50% + var(--dx, 0) * var(--hero) * var(--fly, 0))
+    calc(-50% + var(--dy, 0) * var(--hero) * var(--fly, 0));
+  transition: translate .8s var(--ease), rotate .8s var(--ease);
 }
-.room__anim-layer--1 { --dx: -46%; --dy: -6%; }
-.room__anim-layer--2 { --dx:  44%; --dy: -22%; }
-.room__anim-layer--3 { --dx:  50%; --dy:  20%; }
-.room__anim-layer--4 { --dx: -40%; --dy:  26%; }
-.room__anim-layer--5 { --dx:  10%; --dy: -48%; }
-.room__anim-layer--6 { --dx:  -8%; --dy:  48%; }
+/* each layer flies off on its own vector */
+.room__anim-layer--1 { --dx: -.62; --dy: -.06; }
+.room__anim-layer--2 { --dx:  .60; --dy: -.26; }
+.room__anim-layer--3 { --dx:  .66; --dy:  .22; }
+.room__anim-layer--4 { --dx: -.56; --dy:  .30; }
+.room__anim-layer--5 { --dx:  .14; --dy: -.62; }
+.room__anim-layer--6 { --dx: -.12; --dy:  .62; }
 
+.room:hover .room__anim, .room:focus-within .room__anim { --fly: 1; }
 .room:hover .room__anim-layer,
-.room:focus-within .room__anim-layer {
-  translate: var(--dx) var(--dy);
-  rotate: 4deg;
-}
+.room:focus-within .room__anim-layer { rotate: 4deg; }
+
+/* The mandala peeks out from behind the circle, as it did originally. */
+.room__mandala { translate: -14% 0; }
+.room--flip .room__mandala { translate: 14% 0; }
 
 /* --- thumbnails --- */
 .room__thumbs { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; justify-content: center; }
@@ -367,12 +382,13 @@ main {
   transition: background .25s var(--ease);
 }
 .partner__link:hover { background: rgb(255 255 255 / .7); }
-.partner__logo {
-  display: grid; place-items: center; width: 100%; height: 7rem;
-}
+.partner__logo { display: block; width: 100%; height: 7rem; }
+/* Size the box, let object-fit letterbox the artwork inside it: the logos
+   are wildly different aspect ratios and `max-height` on an auto-height
+   grid item collapses to zero. */
 .partner__logo img {
-  max-width: 100%; max-height: 100%; width: auto; height: auto;
-  object-fit: contain;
+  width: 100%; height: 100%;
+  object-fit: contain; object-position: center;
   transition: scale .3s var(--ease);
 }
 .partner__link:hover .partner__logo img { scale: 1.06; }
@@ -510,8 +526,9 @@ main {
     animation-iteration-count: 1 !important;
     transition-duration: .001ms !important;
   }
+  .room:hover .room__anim, .room:focus-within .room__anim { --fly: 0; }
   .room:hover .room__anim-layer,
-  .room:focus-within .room__anim-layer { translate: 0 0; rotate: 0deg; }
+  .room:focus-within .room__anim-layer { rotate: 0deg; }
 }
 
 @media print {
