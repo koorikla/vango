@@ -1,51 +1,73 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 
 /**
- * Motion. Two things used to make the site feel dead on a phone: the
- * entrance animation rode `animation-timeline: view()`, which only Chromium
- * implements, and the decorative artwork around each room only ever moved on
- * :hover, which a finger never triggers. Both are asserted here, on both the
- * desktop and the touch project.
+ * Motion. All of it is CSS now — scroll-driven animations and view
+ * transitions, with no script involved.
+ *
+ * The one thing that can go badly wrong is the `@supports` guard. Without
+ * it, a browser that does not understand `animation-timeline: view()` still
+ * applies the `from` keyframe and leaves the page permanently blank. That is
+ * far worse than having no animation, and it is invisible from a browser
+ * that does support it — so it is asserted against the stylesheet itself.
  */
 
-/** The first element of a kind that starts below the fold. */
-async function firstOffscreen(page, selector) {
-  const index = await page.evaluate(
-    (sel) => [...document.querySelectorAll(sel)].findIndex(
-      (el) => el.getBoundingClientRect().top >= window.innerHeight
-    ),
-    selector
-  );
-  expect(index, `${selector} has an element below the fold`).toBeGreaterThan(-1);
-  return page.locator(selector).nth(index);
-}
+const css = readFileSync('assets/css/main.css', 'utf8');
 
-test.describe('entrance reveals', () => {
-  test('a block below the fold starts hidden and animates in', async ({ page }) => {
+test.describe('the reveal cannot strand content', () => {
+  test('every hiding rule sits inside the @supports guard', () => {
+    const start = css.indexOf('@supports (animation-timeline: view())');
+    expect(start, '@supports guard is present').toBeGreaterThan(-1);
+
+    // Walk the guard's braces to find where it ends.
+    let depth = 0, end = start;
+    for (let i = css.indexOf('{', start); i < css.length; i++) {
+      if (css[i] === '{') depth++;
+      else if (css[i] === '}' && --depth === 0) { end = i; break; }
+    }
+    const guarded = css.slice(start, end);
+    const outside = css.slice(0, start) + css.slice(end);
+
+    expect(guarded, 'the reveal is inside the guard').toContain('animation: rise');
+    // `rise` starts at opacity 0. If anything outside the guard applied it,
+    // an unsupporting browser would hide that content for ever.
+    expect(outside.includes('animation: rise'), 'nothing applies rise unguarded').toBe(false);
+  });
+
+  test('the reveal finishes while the block is still entering', () => {
+    // A range that runs on into `cover` leaves whatever is already on screen
+    // at load — the first room on a desktop — sitting near 60% opacity until
+    // the reader scrolls, which reads as a rendering fault and undoes the
+    // text contrast this palette was tuned for. Asserted against the rule
+    // rather than by measuring pixels: whether a given element is mid-reveal
+    // at load depends on viewport height, so geometry cannot tell a stranded
+    // block apart from one that is legitimately still arriving.
+    const range = css.match(/animation-range:\s*([^;]+);/);
+    expect(range, 'animation-range is declared').not.toBeNull();
+    expect(range[1].trim(), 'the range must end inside the entry phase')
+      .toMatch(/^entry [\d.]+% entry [\d.]+%$/);
+  });
+
+  test('a block below the fold reveals as it arrives', async ({ page }) => {
     await page.goto('/');
-    const room = await firstOffscreen(page, '.room');
+    const index = await page.evaluate(() =>
+      [...document.querySelectorAll('.room')].findIndex(
+        (el) => el.getBoundingClientRect().top > window.innerHeight * 1.5
+      )
+    );
+    expect(index, 'a room starts well below the fold').toBeGreaterThan(-1);
 
-    await expect(room).toHaveClass(/will-reveal/);
-    await expect(room).toHaveCSS('opacity', '0');
+    const room = page.locator('.room').nth(index);
+    expect(Number(await room.evaluate((el) => getComputedStyle(el).opacity))).toBeLessThan(0.5);
 
     await room.scrollIntoViewIfNeeded();
-    await expect(room).toHaveClass(/is-in/);
-    await expect(room).toHaveCSS('opacity', '1');
+    await expect.poll(
+      () => room.evaluate((el) => Number(getComputedStyle(el).opacity)),
+      { message: 'room reveals once scrolled to' }
+    ).toBe(1);
   });
 
-  test('what is already on screen is never hidden', async ({ page }) => {
-    await page.goto('/');
-    // Anything in the first viewport has been painted; hiding it to animate
-    // it back in would read as a flicker on load.
-    const flashing = await page.evaluate(() =>
-      [...document.querySelectorAll('.will-reveal')]
-        .filter((el) => el.getBoundingClientRect().top < window.innerHeight).length
-    );
-    expect(flashing, 'visible elements were hidden after paint').toBe(0);
-    await expect(page.locator('.room').first()).toHaveCSS('opacity', '1');
-  });
-
-  test('nothing is left invisible when motion is reduced', async ({ page }) => {
+  test('nothing is invisible when motion is reduced', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
     const hidden = await page.evaluate(() =>
@@ -57,71 +79,80 @@ test.describe('entrance reveals', () => {
 });
 
 test.describe('room ornaments', () => {
-  /** Rooms whose front matter gives them decoration layers. */
-  const decoratedRooms = (page) => page.locator('.room:has(.room__anim-layer)');
+  const decorated = (page) => page.locator('.room:has(.room__anim-layer)');
 
-  test('fan out on hover with a pointer', async ({ page, isMobile }) => {
+  test('stay behind the words', async ({ page }) => {
+    // They are white cut-outs: anything they cross disappears. The dragon's
+    // limbs were sitting across the room's own title.
+    await page.goto('/');
+    const z = await page.locator('.room__anim').first()
+      .evaluate((el) => getComputedStyle(el).zIndex);
+    expect(Number(z), 'ornaments paint behind the text').toBeLessThan(0);
+  });
+
+  test('are softened at their edges', async ({ page }) => {
+    // Heliaed's ornament is a hard-edged rectangle rather than a cut-out and
+    // read as a grey slab dropped beside the paragraph.
+    await page.goto('/');
+    const mask = await page.locator('.room__anim').first()
+      .evaluate((el) => getComputedStyle(el).maskImage);
+    expect(mask).toContain('radial-gradient');
+  });
+
+  test('open on hover with a pointer', async ({ page, isMobile }) => {
     test.skip(isMobile, 'pointer-only');
     await page.goto('/');
-    const room = decoratedRooms(page).first();
+    const room = decorated(page).first();
     await room.scrollIntoViewIfNeeded();
+    const fly = () => room.locator('.room__anim')
+      .evaluate((el) => getComputedStyle(el).getPropertyValue('--fly').trim());
 
-    const fly = () => room.locator('.room__anim').evaluate(
-      (el) => getComputedStyle(el).getPropertyValue('--fly').trim()
-    );
-    expect(await fly(), 'at rest the layers sit behind the photo').not.toBe('1');
-
+    expect(await fly()).not.toBe('1');
     await room.hover();
-    await expect.poll(fly, { message: 'layers fan out on hover' }).toBe('1');
+    await expect.poll(fly, { message: 'ornaments open on hover' }).toBe('1');
   });
 
-  test('fan out on scroll when there is no hover to give', async ({ page, isMobile }) => {
+  test('open on scroll where there is no hover to give', async ({ page, isMobile }) => {
     test.skip(!isMobile, 'touch-only');
     await page.goto('/');
-    const room = decoratedRooms(page).first();
+    const room = decorated(page).first();
     await room.scrollIntoViewIfNeeded();
+    await page.mouse.wheel(0, 300);
+    await expect.poll(
+      () => room.locator('.room__anim').evaluate(
+        (el) => Number(getComputedStyle(el).getPropertyValue('--fly')) || 0
+      ),
+      { message: 'ornaments open as the room scrolls in' }
+    ).toBeGreaterThan(0);
+  });
+});
 
-    // The bloom observer wants the room properly in frame, not just touching
-    // the edge, so give it the class rather than a pixel-exact scroll.
-    await expect(room).toHaveClass(/room--bloom/);
-    await expect
-      .poll(() => room.locator('.room__anim').evaluate(
-        (el) => getComputedStyle(el).getPropertyValue('--fly').trim()
-      ), { message: 'ornaments open on a touch device' })
-      .toBe('1');
-
-    // and they have actually moved off centre
-    const moved = await room.locator('.room__anim-layer').first().evaluate((el) => {
-      const t = getComputedStyle(el).translate;
-      return t && t !== 'none' && parseFloat(t) !== 0;
-    });
-    expect(moved, 'a layer is displaced from the circle').toBe(true);
+test.describe('view transitions', () => {
+  test('a room image is named on every page it appears', async ({ page }) => {
+    for (const [url, expected] of [['/', 12], ['/ruumid/', 12]]) {
+      await page.goto(url);
+      const names = await page.locator('[data-vt]').evaluateAll(
+        (els) => els.map((e) => getComputedStyle(e).viewTransitionName)
+      );
+      expect(names.length, `${url} tags every room`).toBe(expected);
+      expect(names.filter((n) => n === 'none'), `${url} has no unnamed tag`).toEqual([]);
+    }
   });
 
-  test('open even when the room is taller than the screen', async ({ page, isMobile }) => {
-    test.skip(!isMobile, 'touch-only');
-    // Set before loading, so the observers are built against this viewport
-    // and nothing has been marked already. A short screen makes a stacked
-    // room — circle, thumbnails, paragraph — taller than the viewport, and
-    // an element bigger than the viewport can never reach a ratio threshold.
-    await page.setViewportSize({ width: 390, height: 380 });
-    await page.goto('/');
+  test('no name is used twice on one page', async ({ page }) => {
+    // A duplicate silently disables the whole transition.
+    for (const url of ['/', '/ruumid/', '/ruumid/kuukoda/', '/en/', '/en/ruumid/moon-chamber/']) {
+      await page.goto(url);
+      const names = await page.locator('[data-vt]').evaluateAll(
+        (els) => els.map((e) => getComputedStyle(e).viewTransitionName)
+      );
+      expect(new Set(names).size, `${url} has duplicate names: ${names.join(', ')}`).toBe(names.length);
+    }
+  });
 
-    const tallest = await page.evaluate(() => {
-      const rooms = [...document.querySelectorAll('.room:has(.room__anim-layer)')];
-      let best = -1, height = 0;
-      rooms.forEach((el, i) => {
-        const h = el.getBoundingClientRect().height;
-        if (h > height) { height = h; best = i; }
-      });
-      return { index: best, height, viewport: window.innerHeight };
-    });
-    expect(tallest.height, 'a room is taller than the viewport')
-      .toBeGreaterThan(tallest.viewport);
-
-    const room = decoratedRooms(page).nth(tallest.index);
-    await room.scrollIntoViewIfNeeded();
-    await expect(room).toHaveClass(/room--bloom/);
+  test('only rooms are tagged — posts have no hero to morph into', async ({ page }) => {
+    await page.goto('/uudised/');
+    await expect(page.locator('[data-vt]')).toHaveCount(0);
   });
 });
 

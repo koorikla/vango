@@ -2,61 +2,6 @@
 (() => {
   'use strict';
 
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
-
-  /* ----------------------------------------------------- entrance reveals */
-  /* Fade-and-lift each block the first time it scrolls into view, and let
-     the ornaments around a room bloom outwards on touch devices — where
-     there is no hover to trigger them.
-
-     The hidden starting state is added here rather than in the stylesheet
-     on purpose: if this file fails to load, nothing has been hidden and
-     the page simply renders without the animation. */
-  if ('IntersectionObserver' in window && !reduceMotion.matches) {
-    const io = new IntersectionObserver(
-      (entries, obs) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          entry.target.classList.add('is-in');
-          obs.unobserve(entry.target);
-        }
-      },
-      // A little short of the bottom edge, so a block is already moving by
-      // the time it is properly in the reader's view rather than at it.
-      { rootMargin: '0px 0px -12% 0px' }
-    );
-
-    for (const el of document.querySelectorAll('.room, .card, .gallery-grid__item, .partner, .cta, .post-nav__link')) {
-      // Anything already on screen has been painted; animating it now would
-      // read as a flicker, so it starts finished.
-      if (el.getBoundingClientRect().top < innerHeight) {
-        el.classList.add('is-in');
-        continue;
-      }
-      el.classList.add('will-reveal');
-      io.observe(el);
-    }
-
-    /* The ornaments are a separate, slower beat: they open once the room is
-       properly in frame, not the moment its top edge appears.
-
-       Expressed as a band across the middle half of the screen rather than
-       as a percentage of the element. A room on a phone — circle, thumbnails
-       and a paragraph stacked — can be taller than the viewport, and a
-       ratio threshold it can never reach would simply never fire. */
-    const bloom = new IntersectionObserver(
-      (entries, obs) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          entry.target.classList.add('room--bloom');
-          obs.unobserve(entry.target);
-        }
-      },
-      { rootMargin: '-25% 0px -25% 0px' }
-    );
-    for (const room of document.querySelectorAll('.room')) bloom.observe(room);
-  }
-
   /* ---------------------------------------------------------- mobile nav */
   const toggle = document.querySelector('.site-nav__toggle');
   const menu = document.getElementById('site-menu');

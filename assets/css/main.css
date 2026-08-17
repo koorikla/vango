@@ -443,7 +443,13 @@ main {
 /* ============================================================
    Rooms
    ============================================================ */
-.rooms { display: grid; gap: var(--space-l); margin-top: var(--space-m); }
+.rooms {
+  display: grid; gap: var(--space-l); margin-top: var(--space-m);
+  /* The ornament layer is deliberately wider than the circle so its mask
+     has room to fade; on a narrow screen that would otherwise push the
+     document sideways. `clip` on one axis leaves the other visible. */
+  overflow-x: clip;
+}
 
 /* Asymmetric composition: the text column overlaps the circle slightly and
    sits off the vertical centre, so the page reads as a laid-out spread
@@ -485,33 +491,57 @@ main {
 /* ============================================================
    Entrance
    ============================================================
-   Each block fades and lifts the first time it comes into view.
+   Each block fades and lifts the first time it scrolls into view, driven by
+   the scroll position itself — no script, no observer, nothing on the main
+   thread.
 
-   This used to ride `animation-timeline: view()`, which is elegant and
-   off the main thread — but only Chromium implements it, so on an iPhone
-   (and in Firefox) nothing moved at all. Most of the traffic to a place
-   like this arrives on a phone, which made the animation a desktop
-   luxury. An IntersectionObserver behaves identically everywhere.
+   The @supports guard is load-bearing. Without it a browser that does not
+   understand view() would still apply the `from` keyframe and leave the
+   content permanently invisible, which is a far worse failure than no
+   animation at all. Everything inside degrades to the finished state.
 
-   The starting state is applied by the script, not by this file: if the
-   script never runs, nothing is ever hidden. Elements already on screen
-   at load are marked done and never animate, so there is no flash. */
-.will-reveal {
-  opacity: 0;
-  translate: 0 1.75rem;
+   Long and decelerating, and under 2rem of travel: this is a watercolour
+   forest, not a product launch. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .room, .card, .gallery-grid__item, .partner, .cta, .post-nav__link {
+      animation: rise linear both;
+      animation-timeline: view();
+      /* Finishes inside the entry phase rather than running on into
+         `cover`. A range that ends at `cover 35%` leaves whatever is already
+         on screen at load — the first room, every time — sitting at around
+         60% opacity until the reader scrolls, which reads as a rendering
+         fault and undoes the text contrast this palette was tuned for. */
+      animation-range: entry 0% entry 45%;
+    }
+
+    /* The ornaments are a slower, separate beat, and on a touch device they
+       are the only way this layer of the artwork is ever seen — there is no
+       hover to open them. --fly has to be registered for it to animate at
+       all; an unregistered custom property jumps rather than interpolates. */
+    @media (hover: none) {
+      .room__anim {
+        animation: bloom linear both;
+        animation-timeline: view();
+        animation-range: entry 25% cover 45%;
+      }
+    }
+  }
 }
-.will-reveal.is-in {
-  opacity: 1;
-  translate: 0 0;
-  /* Long and eased-out: the artwork is watercolour, not an app UI. */
-  transition: opacity .7s var(--ease), translate .7s var(--ease);
+
+@property --fly {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
 }
-/* The circle grows in a touch behind its text, which reads as depth
-   rather than as a second, competing movement. */
-.room.will-reveal .room__hero { scale: .94; }
-.room.will-reveal.is-in .room__hero {
-  scale: 1;
-  transition: scale .8s var(--ease);
+
+@keyframes rise {
+  from { opacity: 0; translate: 0 1.75rem; }
+  to   { opacity: 1; translate: 0 0; }
+}
+@keyframes bloom {
+  from { --fly: 0; }
+  to   { --fly: 1; }
 }
 
 .room__media { display: grid; justify-items: center; gap: 1rem; }
@@ -586,15 +616,14 @@ main {
 /* Opening out, the layers unfurl one after another; returning, they all
    snap back together — a stagger on the way home just reads as lag. */
 .room:hover .room__anim-layer,
-.room:focus-within .room__anim-layer,
-.room--bloom .room__anim-layer { transition-delay: calc(var(--i, 0) * 70ms); }
+.room:focus-within .room__anim-layer { transition-delay: calc(var(--i, 0) * 70ms); }
 
 /* Touch devices never get :hover, so on a phone this entire layer of the
    brand's artwork stayed tucked behind the photograph and was never seen.
    There it blooms when the room arrives on screen instead, and stays out. */
 @media (hover: none) {
-  .room--bloom .room__anim { --fly: 1; }
-  .room--bloom .room__anim-layer { rotate: 3deg; }
+  /* --fly is driven by the scroll timeline above; the tilt rides along. */
+  .room__anim-layer { rotate: calc(var(--fly, 0) * 3deg); }
 }
 
 /* The mandala peeks out from behind the circle, as it did originally. */
@@ -1155,16 +1184,29 @@ main {
   }
   /* The ornaments stay tucked: fanning them out is the movement itself,
      and snapping there instead of sliding is no gentler. */
-  .room:hover .room__anim, .room:focus-within .room__anim,
-  .room--bloom .room__anim { --fly: 0; }
+  .room__anim, .room:hover .room__anim, .room:focus-within .room__anim { --fly: 0; }
+  .room__anim-layer,
   .room:hover .room__anim-layer,
-  .room:focus-within .room__anim-layer,
-  .room--bloom .room__anim-layer { rotate: 0deg; }
-  /* The script skips reveals entirely under this setting, but should the
-     preference change after load, nothing is left stranded invisible. */
-  .will-reveal { opacity: 1; translate: 0 0; }
-  .room.will-reveal .room__hero { scale: 1; }
+  .room:focus-within .room__anim-layer { rotate: 0deg; }
+  /* The reveal is gated on `no-preference`, so it never starts here — but
+     if the preference changes after load, nothing must be left stranded
+     invisible. */
+  .room, .card, .gallery-grid__item, .partner, .cta, .post-nav__link {
+    animation: none !important;
+    opacity: 1 !important;
+    translate: none !important;
+  }
   .lightbox__img { scale: 1; }
+
+  /* A cross-document view transition animates by default even here: the
+     old and new snapshots cross-fade and the named pair morphs. Silencing
+     the pseudo-elements is what actually stops it — `navigation: auto`
+     cannot be conditioned on a media query. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }
 
 @media print {
