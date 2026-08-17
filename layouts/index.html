@@ -18,7 +18,11 @@
 
     <div class="room__media">
       <figure class="room__hero">
-        <a href="{{ (resources.Get $p.Params.hero).RelPermalink }}"
+        {{- /* The lightbox opens a sized copy, not the original: these are
+               WordPress uploads up to 2560px and 1.4 MB, and tapping a room
+               photograph on a phone was downloading all of it. 1600px wide
+               is what photo-grid.html has always used. */ -}}
+        <a href="{{ ((resources.Get $p.Params.hero).Resize "1600x webp q78").RelPermalink }}"
            data-lightbox="{{ $p.Slug }}" data-caption="{{ $p.Title }}">
           {{ partial "img.html" (dict
               "src" $p.Params.hero
@@ -55,7 +59,7 @@
           {{- if $res }}
           {{- $t := $res.Fill "120x120 Center webp q80" }}
           <li>
-            <a class="thumb" href="{{ $res.RelPermalink }}"
+            <a class="thumb" href="{{ ($res.Resize "1600x webp q78").RelPermalink }}"
                data-lightbox="{{ $p.Slug }}" data-caption="{{ $p.Title }}"
                aria-label="{{ printf (i18n "image_of") (add $n 2) (add (len .) 1) }} — {{ $p.Title }}">
               <img src="{{ $t.RelPermalink }}" width="120" height="120" alt="" loading="lazy" decoding="async">
@@ -120,7 +124,7 @@
     {{- range $n, $img := $d.toitlustus.images }}
     {{- $res := resources.Get $img }}
     {{- if $res }}
-    <a class="gallery-grid__item" href="{{ $res.RelPermalink }}"
+    <a class="gallery-grid__item" href="{{ ($res.Resize "1600x webp q78").RelPermalink }}"
        data-lightbox="toitlustus" data-caption="{{ $d.toitlustus.title }}">
       {{ partial "img.html" (dict "src" $img "alt" (printf "%s %d" $d.toitlustus.title (add $n 1))
           "sizes" "(max-width: 720px) 92vw, 46vw" "widths" (slice 480 760 1100)) }}
@@ -138,7 +142,7 @@
     {{- range $n, $img := $d.tegevused.images }}
     {{- $res := resources.Get $img }}
     {{- if $res }}
-    <a class="gallery-grid__item" href="{{ $res.RelPermalink }}"
+    <a class="gallery-grid__item" href="{{ ($res.Resize "1600x webp q78").RelPermalink }}"
        data-lightbox="tegevused" data-caption="{{ $d.tegevused.title }}">
       {{ partial "img.html" (dict "src" $img "alt" (printf "%s %d" $d.tegevused.title (add $n 1))
           "sizes" "(max-width: 720px) 92vw, 46vw" "widths" (slice 480 760 1100)) }}

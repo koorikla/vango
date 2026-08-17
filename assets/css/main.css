@@ -1,6 +1,8 @@
 {{- /* Processed by Hugo (ExecuteAsTemplate) so backgrounds get fingerprinted URLs. */ -}}
-{{- $colorBg  := (resources.Get "img/theme/color-bg.png").RelPermalink -}}
-{{- $vinesUp  := (resources.Get "img/theme/vines-up-o.png").RelPermalink -}}
+{{- $bg       := resources.Get "img/theme/color-bg.png" -}}
+{{- $colorBg  := $bg.RelPermalink -}}
+{{- $colorBgSm := ($bg.Resize "900x png").RelPermalink -}}
+{{- $vinesUp  := ((resources.Get "img/theme/vines-up-o.png").Resize "1400x png").RelPermalink -}}
 {{- $headerBg := (resources.Get "img/theme/header-bg.png").RelPermalink -}}
 {{- $lill     := (resources.Get "img/theme/lill.png").RelPermalink -}}
 {{- $ring     := (resources.Get "img/theme/valge-ring.png").RelPermalink -}}
@@ -161,9 +163,23 @@ a { color: inherit; }
 /* Fixed 1828px-wide centred artwork (as the original theme had it) rather
    than `cover`, so the colour always stays outside the reading column
    instead of washing across it on wide screens. */
+/* The watercolour is 445 kB at full size and was served to every visitor,
+   phones included — where the reading sheet then covers it at 96% opacity
+   and almost none of it is even visible. A 900px copy is 153 kB and there is
+   nothing on a phone that can tell the difference.
+
+   WebP is not the answer here, incidentally: measured, it makes three of the
+   four theme PNGs *larger*. This is flat artwork, which is what PNG is good
+   at. */
 .backdrop__colour {
   position: absolute; inset: 0;
-  background: url("{{ $colorBg }}") center top / 1828px 100% no-repeat, var(--page);
+  background: url("{{ $colorBgSm }}") center top / 900px 100% no-repeat, var(--page);
+}
+@media (min-width: 901px) {
+  .backdrop__colour {
+    background-image: url("{{ $colorBg }}");
+    background-size: 1828px 100%;
+  }
 }
 .backdrop__colour::after {
   content: ""; position: absolute; inset: 0;

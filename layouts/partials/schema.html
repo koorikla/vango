@@ -13,7 +13,9 @@
 {{- /* The same picture the share cards use, so a rich result and a Messenger
        preview show the place the same way. */ -}}
 {{- $siteImg := "" }}
-{{- with $d.meta.ogImage }}{{ with resources.Get . }}{{ $siteImg = .Permalink }}{{ end }}{{ end }}
+{{- /* A sized copy, so the untouched upload is never published. Google asks
+       for at least 1200px wide; 1600 is what the lightbox serves too. */ -}}
+{{- with $d.meta.ogImage }}{{ with resources.Get . }}{{ $siteImg = (.Resize "1600x webp q78").Permalink }}{{ end }}{{ end }}
 
 {{- /* The place itself. Emitted on the home page only — repeating the same
        business on every post would just compete with the post's own markup. */ -}}
@@ -40,10 +42,10 @@
 {{- /* A post's own markup: an Event carries its dates, everything else is an
        article. Both are what search engines and social cards read. */ -}}
 {{- $img := "" -}}
-{{- with .Resources.GetMatch "{*.jpg,*.jpeg,*.png,*.webp}" }}{{ $img = .Permalink }}{{ end -}}
-{{- with .Params.hero }}{{ with resources.Get . }}{{ $img = .Permalink }}{{ end }}{{ end -}}
+{{- with .Resources.GetMatch "{*.jpg,*.jpeg,*.png,*.webp}" }}{{ $img = (.Resize "1600x webp q78").Permalink }}{{ end -}}
+{{- with .Params.hero }}{{ with resources.Get . }}{{ $img = (.Resize "1600x webp q78").Permalink }}{{ end }}{{ end -}}
 {{- with .Params.cover }}
-  {{- with ($.Resources.GetMatch . | default (resources.Get .)) }}{{ $img = .Permalink }}{{ end }}
+  {{- with ($.Resources.GetMatch . | default (resources.Get .)) }}{{ $img = (.Resize "1600x webp q78").Permalink }}{{ end }}
 {{- end -}}
 
 {{- $data := $place -}}

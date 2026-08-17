@@ -4,7 +4,7 @@
 {{- $caption := .caption -}}
 <div class="gallery-grid">
   {{- range $n, $img := .images }}
-  {{- $full := $img.Resize "1600x webp q82" }}
+  {{- $full := $img.Resize "1600x webp q78" }}
   {{- $thumb := $img.Fill "800x600 Center webp q80" }}
   <a class="gallery-grid__item" href="{{ $full.RelPermalink }}"
      data-lightbox="{{ $group }}" data-caption="{{ $caption }}">
