@@ -17,7 +17,10 @@
       <span class="card__media">
         {{- if $cover }}
         {{- $c := $cover.Fill "720x480 Center webp q80" }}
-        <img src="{{ $c.RelPermalink }}" width="720" height="480" alt="" loading="lazy" decoding="async">
+        {{- /* Rooms only: this grid also renders news, events and galleries,
+               and those have no detail hero to morph into. */ -}}
+        <img src="{{ $c.RelPermalink }}" width="720" height="480" alt="" loading="lazy" decoding="async"
+             {{- if eq .Section "ruumid" }} data-vt="{{ .Slug }}"{{ end }}>
         {{- else }}
         <span class="card__media-empty" aria-hidden="true"></span>
         {{- end }}

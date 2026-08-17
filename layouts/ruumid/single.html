@@ -31,6 +31,7 @@
       {{ partial "img.html" (dict
           "src" $.Params.hero
           "alt" $.Title
+          "vt" $.Slug
           "sizes" "(max-width: 720px) 92vw, 1000px"
           "widths" (slice 600 900 1200 1600)
           "loading" "eager"

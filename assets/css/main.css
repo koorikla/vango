@@ -85,6 +85,28 @@
   {{- end }}
 {{- end }}
 
+/* ============================================================
+   Cross-document view transitions
+   ============================================================
+   A room's photograph appears in three shapes — a circle on the one-pager,
+   a card on /ruumid/, a full-width rectangle on the room's own page. Naming
+   the same room's image in each lets the browser morph between them across
+   the navigation instead of blanking the page.
+
+   The names are generated from the room slugs rather than written into the
+   markup, so no element carries an inline style. Every language's rooms are
+   listed, because one stylesheet serves both and a name that is never
+   present simply does nothing. A name must be unique within a document:
+   these are, since a room is never shown twice on one page (a room's
+   "other rooms" strip lists its neighbours, never itself). */
+@view-transition { navigation: auto; }
+
+{{ range $s := hugo.Sites }}
+{{- range $p := where $s.RegularPages "Section" "ruumid" }}
+[data-vt="{{ $p.Slug }}"] { view-transition-name: room-{{ $p.Slug }}; }
+{{- end }}
+{{- end }}
+
 *, *::before, *::after { box-sizing: border-box; }
 
 /* The sticky bar would otherwise cover the top of whatever an anchor jumps

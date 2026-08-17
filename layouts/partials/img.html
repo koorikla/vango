@@ -35,5 +35,8 @@
      width="{{ $fb.Width }}" height="{{ $fb.Height }}"
      alt="{{ $alt }}"
      loading="{{ $loading }}" decoding="async"
-     {{- with .fetchpriority }} fetchpriority="{{ . }}"{{ end }}>
+     {{- with .fetchpriority }} fetchpriority="{{ . }}"{{ end }}
+     {{- /* Names this image for a cross-document view transition; the
+            matching rule is generated in main.css from the room slugs. */ -}}
+     {{- with .vt }} data-vt="{{ . }}"{{ end }}>
 {{- end -}}
