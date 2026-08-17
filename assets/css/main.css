@@ -453,21 +453,36 @@ main {
   .room--flip       { margin-right: 0; margin-left: calc(var(--space-m) * .5); }
 }
 
-/* One entrance: each room fades and lifts as it first comes into view.
-   `view-timeline` keeps it off the main thread and needs no JS; browsers
-   without support simply show the finished state. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .room, .card, .gallery-grid__item {
-      animation: rise linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 45%;
-    }
-  }
+/* ============================================================
+   Entrance
+   ============================================================
+   Each block fades and lifts the first time it comes into view.
+
+   This used to ride `animation-timeline: view()`, which is elegant and
+   off the main thread — but only Chromium implements it, so on an iPhone
+   (and in Firefox) nothing moved at all. Most of the traffic to a place
+   like this arrives on a phone, which made the animation a desktop
+   luxury. An IntersectionObserver behaves identically everywhere.
+
+   The starting state is applied by the script, not by this file: if the
+   script never runs, nothing is ever hidden. Elements already on screen
+   at load are marked done and never animate, so there is no flash. */
+.will-reveal {
+  opacity: 0;
+  translate: 0 1.75rem;
 }
-@keyframes rise {
-  from { opacity: 0; translate: 0 2rem; }
-  to   { opacity: 1; translate: 0 0; }
+.will-reveal.is-in {
+  opacity: 1;
+  translate: 0 0;
+  /* Long and eased-out: the artwork is watercolour, not an app UI. */
+  transition: opacity .7s var(--ease), translate .7s var(--ease);
+}
+/* The circle grows in a touch behind its text, which reads as depth
+   rather than as a second, competing movement. */
+.room.will-reveal .room__hero { scale: .94; }
+.room.will-reveal.is-in .room__hero {
+  scale: 1;
+  transition: scale .8s var(--ease);
 }
 
 .room__media { display: grid; justify-items: center; gap: 1rem; }
@@ -511,18 +526,33 @@ main {
     calc(-50% + var(--dx, 0) * var(--hero) * var(--fly, 0))
     calc(-50% + var(--dy, 0) * var(--hero) * var(--fly, 0));
   transition: translate .8s var(--ease), rotate .8s var(--ease);
+  transition-delay: 0s;
 }
 /* each layer flies off on its own vector */
-.room__anim-layer--1 { --dx: -.62; --dy: -.06; }
-.room__anim-layer--2 { --dx:  .60; --dy: -.26; }
-.room__anim-layer--3 { --dx:  .66; --dy:  .22; }
-.room__anim-layer--4 { --dx: -.56; --dy:  .30; }
-.room__anim-layer--5 { --dx:  .14; --dy: -.62; }
-.room__anim-layer--6 { --dx: -.12; --dy:  .62; }
+.room__anim-layer--1 { --dx: -.62; --dy: -.06; --i: 0; }
+.room__anim-layer--2 { --dx:  .60; --dy: -.26; --i: 1; }
+.room__anim-layer--3 { --dx:  .66; --dy:  .22; --i: 2; }
+.room__anim-layer--4 { --dx: -.56; --dy:  .30; --i: 3; }
+.room__anim-layer--5 { --dx:  .14; --dy: -.62; --i: 4; }
+.room__anim-layer--6 { --dx: -.12; --dy:  .62; --i: 5; }
 
 .room:hover .room__anim, .room:focus-within .room__anim { --fly: 1; }
 .room:hover .room__anim-layer,
 .room:focus-within .room__anim-layer { rotate: 4deg; }
+
+/* Opening out, the layers unfurl one after another; returning, they all
+   snap back together — a stagger on the way home just reads as lag. */
+.room:hover .room__anim-layer,
+.room:focus-within .room__anim-layer,
+.room--bloom .room__anim-layer { transition-delay: calc(var(--i, 0) * 70ms); }
+
+/* Touch devices never get :hover, so on a phone this entire layer of the
+   brand's artwork stayed tucked behind the photograph and was never seen.
+   There it blooms when the room arrives on screen instead, and stays out. */
+@media (hover: none) {
+  .room--bloom .room__anim { --fly: 1; }
+  .room--bloom .room__anim-layer { rotate: 3deg; }
+}
 
 /* The mandala peeks out from behind the circle, as it did originally. */
 .room__mandala { translate: -14% 0; }
@@ -833,21 +863,55 @@ main {
   width: clamp(44px, 8vw, 56px); aspect-ratio: 1;
   border: 0; border-radius: 18px; cursor: pointer;
   background: var(--accent-2); color: #fff; opacity: .9;
-  transition: opacity .25s var(--ease), translate .25s var(--ease);
+  transition:
+    opacity .25s var(--ease),
+    translate .25s var(--ease),
+    scale .25s var(--ease),
+    display .25s allow-discrete;
 }
-.to-top[hidden] { display: none; }
+/* It appears and disappears mid-scroll, so it grows in from nothing rather
+   than blinking into existence under the reader's thumb. */
+.to-top[hidden] { display: none; opacity: 0; scale: .8; }
+@starting-style {
+  .to-top:not([hidden]) { opacity: 0; scale: .8; }
+}
 .to-top:hover { opacity: 1; translate: 0 -3px; }
+.to-top:active { scale: .92; }
 
 /* ============================================================
    Lightbox
    ============================================================ */
+/* The dialog used to snap in and out. It now fades, and the picture rises
+   the last few percent into place — `display` and `overlay` join the
+   transition via `allow-discrete` so the close animates too, which a plain
+   `display: none` can never do. Browsers without it just cut, as before. */
 .lightbox {
   width: min(100vw, 100%); max-width: none; height: 100dvh; max-height: none;
   margin: 0; padding: 0; border: 0; background: transparent; color: #fff;
   overscroll-behavior: contain;
+  opacity: 0;
+  transition:
+    opacity .28s var(--ease),
+    display .28s allow-discrete,
+    overlay .28s allow-discrete;
 }
-.lightbox::backdrop { background: rgb(12 10 10 / .92); }
-.lightbox:not([open]) { display: none; }
+.lightbox[open] { opacity: 1; }
+@starting-style {
+  .lightbox[open] { opacity: 0; }
+}
+
+.lightbox::backdrop {
+  background: rgb(12 10 10 / .92);
+  opacity: 0;
+  transition:
+    opacity .28s var(--ease),
+    display .28s allow-discrete,
+    overlay .28s allow-discrete;
+}
+.lightbox[open]::backdrop { opacity: 1; }
+@starting-style {
+  .lightbox[open]::backdrop { opacity: 0; }
+}
 
 .lightbox__stage {
   display: grid; place-items: center;
@@ -857,7 +921,10 @@ main {
   max-width: 100%; max-height: 100%;
   width: auto; height: auto; object-fit: contain;
   border-radius: 6px; box-shadow: 0 12px 60px rgb(0 0 0 / .5);
+  scale: .97;
+  transition: scale .32s var(--ease);
 }
+.lightbox[open] .lightbox__img { scale: 1; }
 .lightbox__caption {
   position: absolute; left: 50%; bottom: 1rem; translate: -50% 0; margin: 0;
   padding: .4rem .9rem; border-radius: 999px; background: rgb(0 0 0 / .5);
@@ -915,14 +982,59 @@ main {
     border: 1px solid var(--rule); border-radius: var(--radius);
     background: #fff; overflow: hidden auto;
     max-height: min(60svh, 26rem);
+    /* The panel used to appear and vanish in a single frame. `allow-discrete`
+       lets `display` take part in the transition, so it can fade out on the
+       way back without any JS holding it open. */
+    opacity: 0; translate: 0 -.5rem;
+    transition:
+      opacity .22s var(--ease),
+      translate .22s var(--ease),
+      display .22s allow-discrete;
   }
-  .site-nav__list.is-open { display: flex; }
+  .site-nav__list.is-open { display: flex; opacity: 1; translate: 0 0; }
+  @starting-style {
+    .site-nav__list.is-open { opacity: 0; translate: 0 -.5rem; }
+  }
   .site-nav__list li + li { border-top: 1px solid var(--rule); }
   .site-nav__list a { text-align: center; }
   .backdrop__sheet { background: rgb(255 255 255 / .96); }
+
+  /* A blurred bar is a per-frame GPU cost on every scroll, and phones are
+     where that is felt. Opaque paper reads the same and costs nothing. */
+  .site-nav::before { backdrop-filter: none; background: rgb(253 250 246 / .97); }
   /* stacked, so "older" reads underneath "newer" rather than beside it */
   .post-nav { grid-template-columns: 1fr; }
   .post-nav__link--next { grid-column: auto; text-align: left; }
+}
+
+/* ============================================================
+   Touch feedback
+   ============================================================
+   Every piece of feedback on this page was a :hover state, which a finger
+   never triggers — tap a card on a phone and nothing acknowledged it until
+   the next page painted. A short press-in does, and it costs one property.
+   Kept off pointer devices, where hover already answers. */
+@media (hover: none) {
+  .card__link, .gallery-grid__item, .post-nav__link, .partner__link,
+  .thumb, .pill, .cta__book, .site-nav__book, .thumbs__more, .pager a {
+    transition: scale .18s var(--ease), opacity .18s var(--ease);
+  }
+  .card__link:active, .gallery-grid__item:active, .post-nav__link:active,
+  .partner__link:active, .pill:active, .cta__book:active,
+  .site-nav__book:active, .thumbs__more:active, .pager a:active {
+    scale: .975;
+  }
+  /* Thumbnails are small enough that a scale-down would lose them; they
+     lift instead, the way they do under a cursor. */
+  .thumb:active { scale: 1.18; }
+  .room__hero > a:active { scale: .97; }
+  .lightbox__btn:active { scale: .9; background: rgb(255 255 255 / .3); }
+}
+
+/* Stop a double-tap zooming the page on controls that are meant to be
+   tapped repeatedly — paging through a gallery, mostly. */
+.lightbox__btn, .site-nav__toggle, .to-top, .thumb, .thumbs__more {
+  touch-action: manipulation;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -932,9 +1044,18 @@ main {
     animation-iteration-count: 1 !important;
     transition-duration: .001ms !important;
   }
-  .room:hover .room__anim, .room:focus-within .room__anim { --fly: 0; }
+  /* The ornaments stay tucked: fanning them out is the movement itself,
+     and snapping there instead of sliding is no gentler. */
+  .room:hover .room__anim, .room:focus-within .room__anim,
+  .room--bloom .room__anim { --fly: 0; }
   .room:hover .room__anim-layer,
-  .room:focus-within .room__anim-layer { rotate: 0deg; }
+  .room:focus-within .room__anim-layer,
+  .room--bloom .room__anim-layer { rotate: 0deg; }
+  /* The script skips reveals entirely under this setting, but should the
+     preference change after load, nothing is left stranded invisible. */
+  .will-reveal { opacity: 1; translate: 0 0; }
+  .room.will-reveal .room__hero { scale: 1; }
+  .lightbox__img { scale: 1; }
 }
 
 @media print {
