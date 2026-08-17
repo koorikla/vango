@@ -30,6 +30,28 @@ jobs:
             "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
           sudo dpkg -i hugo.deb
 
+      # On a clean runner Hugo re-encodes every derivative from scratch —
+      # ~130 photographs into AVIF, WebP and JPEG at four widths each — and
+      # that is essentially the whole of the build's wall time. Locally it is
+      # 15s cold against 0.2s with this cache present, and a runner is slower
+      # than a laptop. The cache is 35 MB, against 10 GB per repository on
+      # the free plan, and GitHub drops entries a week after their last use.
+      #
+      # The key covers what actually decides a derivative: the source
+      # pictures, and the processing specs written in the templates and in
+      # [imaging]. restore-keys is doing more work than the key here — on a
+      # miss it pulls the newest cache anyway and Hugo regenerates only what
+      # genuinely changed, while `--gc` prunes whatever is no longer
+      # referenced, so what gets saved stays the size of the site rather
+      # than the size of its history.
+      - name: Cache Hugo's processed images
+        uses: actions/cache@v6
+        with:
+          path: resources/_gen
+          key: hugo-gen-${{ runner.os }}-${{ hashFiles('assets/img/**', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.png', 'layouts/**', 'hugo.toml') }}
+          restore-keys: |
+            hugo-gen-${{ runner.os }}-
+
       # Builds against the production baseURL from hugo.toml. The deploy
       # workflow rebuilds with whatever baseURL the target host needs.
       - name: Build
@@ -70,16 +92,44 @@ jobs:
             "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
           sudo dpkg -i hugo.deb
 
+      # Restore only. This job runs `hugo server`, which has no `--gc`, so
+      # letting it write the cache back would save an unpruned one. The build
+      # job above owns saving it.
+      - name: Restore Hugo's processed images
+        if: steps.check.outputs.found == 'true'
+        uses: actions/cache/restore@v6
+        with:
+          path: resources/_gen
+          key: hugo-gen-${{ runner.os }}-${{ hashFiles('assets/img/**', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.png', 'layouts/**', 'hugo.toml') }}
+          restore-keys: |
+            hugo-gen-${{ runner.os }}-
+
       - uses: actions/setup-node@v7
         if: steps.check.outputs.found == 'true'
         with:
           node-version: 22
+          cache: npm
+
+      # The browser binary is ~130 MB and does not change between runs; the
+      # OS packages it links against are installed outside the cached path,
+      # so they are laid down again either way.
+      - name: Cache the Playwright browser
+        if: steps.check.outputs.found == 'true'
+        id: browser
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         if: steps.check.outputs.found == 'true'
         run: |
           npm install
-          npx playwright install --with-deps chromium
+          if [ "${{ steps.browser.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install-deps chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
 
       - name: Run Playwright
         if: steps.check.outputs.found == 'true'
