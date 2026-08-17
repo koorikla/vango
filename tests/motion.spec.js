@@ -48,7 +48,8 @@ test.describe('the reveal cannot strand content', () => {
       .toMatch(/^entry [\d.]+% entry [\d.]+%$/);
   });
 
-  test('a block below the fold reveals as it arrives', async ({ page }) => {
+  test('a block below the fold reveals as it arrives', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'small screens reveal by movement only — see below');
     await page.goto('/');
     const index = await page.evaluate(() =>
       [...document.querySelectorAll('.room')].findIndex(
@@ -163,5 +164,28 @@ test.describe('touch affordances', () => {
     for (const sel of ['.site-nav__toggle', '.thumb', '.thumbs__more']) {
       await expect(page.locator(sel).first(), sel).toHaveCSS('touch-action', 'manipulation');
     }
+  });
+});
+
+test.describe('the reveal can never hide content on a phone', () => {
+  test('below the desktop breakpoint the reveal only moves', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'small-viewport only');
+    await page.goto('/');
+    // A browser whose toolbar resizes the viewport mid-scroll recomputes the
+    // timeline underneath the gesture, and an element already on screen can
+    // fall back into the animation's "before" phase. If that phase is
+    // transparent, rooms blank out — which is what scrolling back up showed
+    // on iOS. Nothing below 860px may start from zero opacity.
+    const from = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--reveal-from').trim()
+    );
+    expect(from, '--reveal-from is 1 on small screens').toBe('1');
+
+    const invisible = await page.evaluate(() => {
+      window.scrollTo(0, document.documentElement.scrollHeight);
+      return [...document.querySelectorAll('.room')]
+        .filter((el) => Number(getComputedStyle(el).opacity) === 0).length;
+    });
+    expect(invisible, 'no room is fully transparent at any scroll position').toBe(0);
   });
 });
