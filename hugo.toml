@@ -51,8 +51,20 @@ disableKinds = ["taxonomy", "term"]
   home = ["HTML"]
   section = ["HTML", "RSS"]
 
+# News, events and galleries are streams worth subscribing to. Rooms are not:
+# they change once a decade, and a feed of them only added a meaningless
+# <link rel="alternate"> to every room page.
+[[cascade]]
+  outputs = ["HTML"]
+  [cascade.target]
+    path = "{/ruumid,/ruumid/**}"
+
 [markup.goldmark.renderer]
-  unsafe = true   # room bodies are trusted HTML lifted from the old site
+  # Off, now that no content file contains raw HTML. The room bodies were
+  # <p> soup carried over from WordPress; they are markdown, and their
+  # capacity line is front matter. Leave this off — the only HTML left on the
+  # site is in data/*/site.json, which templates render explicitly.
+  unsafe = false
 
 [imaging]
   resampleFilter = "Lanczos"

@@ -14,4 +14,4 @@ animations:
   - "img/uploads/2020-04-home-lotos-bottom3.png"
 ---
 
-<p>on paik, kus Vango valvurid ise oma elu elavad. See on paik, kus on ikka hää olla.</p>
+on paik, kus Vango valvurid ise oma elu elavad. See on paik, kus on ikka hää olla.

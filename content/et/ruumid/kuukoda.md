@@ -1,6 +1,6 @@
 ---
 title: "Kuukoda"
-translationKey: "tiigimaja"
+translationKey: "kuukoda"
 slug: "kuukoda"
 weight: 30
 hero: "img/uploads/2015-01-kuukoda_fassaad-scaled.jpg"
@@ -17,6 +17,8 @@ animations:
   - "img/uploads/2020-04-kala-keerlev.png"
   - "img/uploads/2020-04-kala-mull-1.png"
   - "img/uploads/2020-04-kala-mull-2.png"
+capacity: "Majutab 15 inimest"
+extra: "Vana renoveeritud palkmaja, mille ülakorrusel kolme- ja nelja- ning alakorrusel kahekohalised toad. Kuuruumis saab korraldada ka üritusi *ca* 20 inimesele."
 ---
 
-<p>asub järve pervel ja vaatab igatsedes kuud. Romantiline majake on täis imearmsaid tubasid ning selle süda on valgusküllane kuuruum, kust lahkumine raske näib. Nii kõvasti kutsub kuu jääma.</p><p class="fact">Majutab 15 inimest</p><p>Lisainfo: Vana renoveeritud palkmaja, mille ülakorrusel kolme- ja nelja- ning alakorrusel kahekohalised toad. Kuuruumis saab korraldada ka üritusi <em>ca</em> 20 inimesele.</p>
+asub järve pervel ja vaatab igatsedes kuud. Romantiline majake on täis imearmsaid tubasid ning selle süda on valgusküllane kuuruum, kust lahkumine raske näib. Nii kõvasti kutsub kuu jääma.

@@ -77,7 +77,15 @@
              internal signal each of those pages gets, and the most obvious
              place a reader would expect to click. */ -}}
       <h3 class="room__title"><a href="{{ $p.RelPermalink }}">{{ $p.Title }}</a></h3>
-      <div class="room__body prose">{{ partial "richtext.html" $p.Content }}</div>
+      <div class="room__body prose">
+        {{- partial "richtext.html" $p.Content }}
+        {{- /* Capacity and extra info used to be <p> tags buried in the body's
+               raw HTML, with their labels written into the prose. As front
+               matter they are facts about the room, the labels come from
+               i18n, and the order is the template's to decide. */ -}}
+        {{- with $p.Params.capacity }}<p class="fact">{{ . | markdownify }}</p>{{ end }}
+        {{- with $p.Params.extra }}<p class="room__extra">{{ i18n "extra_info" }}: {{ . | markdownify }}</p>{{ end }}
+      </div>
       {{- /* The room name is carried in a hidden span rather than on screen:
              twelve visible "Vaata lähemalt" links would read identically to a
              screen reader, and twelve labelled ones would clutter the page. */ -}}

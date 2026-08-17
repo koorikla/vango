@@ -1,6 +1,6 @@
 ---
 title: "Käbi"
-translationKey: "peomaja"
+translationKey: "kabi"
 slug: "kabi"
 weight: 20
 hero: "img/uploads/2015-01-IMG_2852-scaled-e1620746163719.jpeg"
@@ -13,6 +13,8 @@ gallery:
   - "img/uploads/2015-01-kristelipulm_vangos2-e1620746332719.jpg"
 animations:
   - "img/uploads/2020-04-spiraal.png"
+capacity: "Mahutavus oleneb ruumi kasutamisest."
+extra: "Majas on ka tualetid, suur köök ning külmikutuba. Endine rehekuivati."
 ---
 
-<p>on koht, kus kohtuvad paljud. Vahel on see tähistamiseks, vahel õppimiseks, vahel aga vaimseks või kehaliseks treeninguks. Igaüks leiab oma koha.</p><p class="fact">Mahutavus oleneb ruumi kasutamisest.</p><p>Lisainfo: Majas on ka tualetid, suur köök ning külmikutuba. Endine rehekuivati.</p>
+on koht, kus kohtuvad paljud. Vahel on see tähistamiseks, vahel õppimiseks, vahel aga vaimseks või kehaliseks treeninguks. Igaüks leiab oma koha.

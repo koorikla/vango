@@ -892,6 +892,12 @@ main {
 }
 .post-nav__link:hover .post-nav__title { color: var(--accent); }
 
+/* --- 404 --- */
+.not-found__ways {
+  display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center;
+  margin-top: var(--space-m);
+}
+
 /* --- pager --- */
 .pager {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center;

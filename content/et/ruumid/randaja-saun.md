@@ -1,6 +1,6 @@
 ---
 title: "Rändaja saun"
-translationKey: "saunamaja"
+translationKey: "randaja-saun"
 slug: "randaja-saun"
 weight: 80
 hero: "img/uploads/2015-01-vango_saun_talvel-scaled-e1620746895730.jpg"
@@ -13,6 +13,8 @@ gallery:
   - "img/uploads/2023-11-saun_tuba_parem-scaled.jpg"
 animations:
   - "img/uploads/2020-04-taimed1.png"
+capacity: "Majutab: teisel korrusel 11 voodit, all kööktoas lisaks diivanvoodi."
+extra: "saunamaja terrassil saab kümblustünnis mõnuledes tähistaevast imetleda."
 ---
 
-<p>on paik, kuhu iga rändaja kunagi satub. Seal saab mõnusalt lõõgastuda või einestada. Enne uut rännakut tasub Rändaja saunast läbi käia. Räägitakse, et siis on rännak kaunim ja tee sihtkohta lühem.</p><p class="fact">Majutab: teisel korrusel 11 voodit, all kööktoas lisaks diivanvoodi.</p><p>Lisainfo: saunamaja terrassil saab kümblustünnis mõnuledes tähistaevast imetleda.</p>
+on paik, kuhu iga rändaja kunagi satub. Seal saab mõnusalt lõõgastuda või einestada. Enne uut rännakut tasub Rändaja saunast läbi käia. Räägitakse, et siis on rännak kaunim ja tee sihtkohta lühem.

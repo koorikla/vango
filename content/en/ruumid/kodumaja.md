@@ -14,4 +14,4 @@ animations:
   - "img/uploads/2020-04-home-lotos-bottom3.png"
 ---
 
-<p>is a place where guardians of Vango dwell and live their private lives. Home is always a good place to be at.</p>
+is a place where guardians of Vango dwell and live their private lives. Home is always a good place to be at.

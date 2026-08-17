@@ -18,9 +18,12 @@ Meals, activities, partners and contact live on `/` — the nav links to them
 are anchors, not pages. Rooms appear there too, but each also has a page of
 its own (see below).
 
-- **Room text** — `content/et/ruumid/<room>.md` and the same file under
-  `content/en/`. Each has a `hero` image, a `gallery` list and optional
-  `animations`.
+- **Room text** — `content/<lang>/ruumid/<room>.md`, one file per language,
+  named after the room. Plain markdown: the description in the body, and
+  `hero`, `gallery`, `capacity`, `extra` and optional `animations` in the
+  front matter. `capacity` ("Majutab 15 inimest") and `extra` are facts, so
+  they live as fields rather than as labelled paragraphs — the template
+  decides where they sit and supplies the "Lisainfo" label.
 - **Everything else on the home page** — `data/et/site.json` and
   `data/en/site.json`. Section titles, the partner list, contact details and
   the activities text live there. `meta.tagline` is the one-line description
@@ -67,6 +70,11 @@ ranking across; simply dropping the URL does not.
 room has no redirect, or if a rule in `_redirects` would shadow a live page.
 
 ### Writing a room
+
+Bodies are **markdown, not HTML**. Raw HTML in a content file is switched off
+(`markup.goldmark.renderer.unsafe = false`) and a test fails if any comes
+back — the room bodies used to be `<p>` soup carried over from WordPress,
+which is the only reason it was ever on.
 
 Most room texts are written to run straight on from the room's name, with no
 subject of their own — *"…on eriti müstiline paik"* — because on the

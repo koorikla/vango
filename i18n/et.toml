@@ -109,3 +109,12 @@ other = "Teised paigad"
 
 [see_room]
 other = "Vaata lähemalt"
+
+[not_found_title]
+other = "Seda lehte ei ole"
+
+[not_found_body]
+other = "Aadress on vale või leht on kolinud. Siit leiad tee edasi."
+
+[extra_info]
+other = "Lisainfo"

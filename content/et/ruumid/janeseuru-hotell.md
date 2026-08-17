@@ -1,6 +1,6 @@
 ---
 title: "Jäneseuru hotell"
-translationKey: "rabbithole"
+translationKey: "janeseuru-hotell"
 slug: "janeseuru-hotell"
 weight: 70
 hero: "img/uploads/2015-01-rabbithole_front-scaled.jpg"
@@ -16,6 +16,7 @@ animations:
   - "img/uploads/2020-04-lotos-top.png"
   - "img/uploads/2020-04-lotos-bottom.png"
   - "img/uploads/2020-04-lotos-pollen.png"
+capacity: "Majutab: kahekohaline voodi"
 ---
 
-<p>peidab end Imedemaa nurgas künka sees. Pulmade ajal armastab noorpaar siia endale pesa teha, aga siin on igal ajal mõnus tähistada kahekesi olemist. Lisaks hotellitoale on teie päralt oma köök ja saun.</p><p class="fact">Majutab: kahekohaline voodi</p>
+peidab end Imedemaa nurgas künka sees. Pulmade ajal armastab noorpaar siia endale pesa teha, aga siin on igal ajal mõnus tähistada kahekesi olemist. Lisaks hotellitoale on teie päralt oma köök ja saun.

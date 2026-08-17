@@ -1,6 +1,6 @@
 ---
 title: "Small Wonderland Lake"
-translationKey: "indiaanisaun-3"
+translationKey: "imedemaa-veesilm"
 slug: "small-wonderland-lake"
 weight: 90
 hero: "img/uploads/2015-01-4.jpg"
@@ -11,4 +11,4 @@ animations:
   - "img/uploads/2020-04-fire-2.png"
 ---
 
-<p>is a cheerful spot where the quirky faun is known to rip off people’s clothes and sometimes even throw a sweaty one to the lake.</p>
+is a cheerful spot where the quirky faun is known to rip off people’s clothes and sometimes even throw a sweaty one to the lake.

@@ -11,6 +11,12 @@
   {{- $title = printf "%s — %s" .Title site.Title -}}
   {{- $desc = truncate 160 (partial "summary.html" .) -}}
 {{- end -}}
+{{- /* Hugo names the 404 page "404 Page not found", in English, whatever the
+     site's language. It says so to the reader in their own words already. */ -}}
+{{- if eq .Kind "404" -}}
+  {{- $title = printf "%s — %s" (i18n "not_found_title") site.Title -}}
+  {{- $desc = i18n "not_found_body" -}}
+{{- end -}}
 
 {{- /* Share image, in order of preference: the page's own cover, the first
      picture in its bundle, then the site-wide one named in site.json.
@@ -40,6 +46,9 @@
   {{- /* Matches the paper the page is printed on, so a phone's browser
          chrome continues the sheet instead of framing it in grey. */}}
   <meta name="theme-color" content="#fdfaf6">
+  {{- if eq .Kind "404" }}
+  <meta name="robots" content="noindex">
+  {{- end }}
 
   {{- with .OutputFormats.Get "html" }}<link rel="canonical" href="{{ .Permalink }}">{{ end }}
   {{- range .AllTranslations }}

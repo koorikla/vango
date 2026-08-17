@@ -1,6 +1,6 @@
 ---
 title: "Targa Tamme ait"
-translationKey: "suur-ait"
+translationKey: "targa-tamme-ait"
 slug: "targa-tamme-ait"
 weight: 40
 hero: "img/uploads/2015-01-35.jpg"
@@ -15,6 +15,7 @@ animations:
   - "img/uploads/2020-04-bug-alumine-suur.png"
   - "img/uploads/2020-04-bug-ylemine-small1.png"
   - "img/uploads/2020-04-bug-alumine-small1.png"
+capacity: "Majutab: all korrusel 4 kahekohalist tuba, ülal 2 kuuekohalist tuba."
 ---
 
-<p>on üks toetav ja igivana maja, mis värske ilme saanud. Seal võib saada suure tarkuse osaliseks, kui ajahambalt osata abi paluda. Targa Tamme aida pervel tasub suuri mõtteid mõelda.</p><p class="fact">Majutab: all korrusel 4 kahekohalist tuba, ülal 2 kuuekohalist tuba.</p>
+on üks toetav ja igivana maja, mis värske ilme saanud. Seal võib saada suure tarkuse osaliseks, kui ajahambalt osata abi paluda. Targa Tamme aida pervel tasub suuri mõtteid mõelda.

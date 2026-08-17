@@ -1,0 +1,26 @@
+{{ define "main" }}
+{{- /* There was no 404 page at all: a mistyped or long-dead link landed on
+       whatever the host prints by default, with no way back into the site.
+       That matters more than usual here, because a decade of WordPress URLs
+       are still out in the world and only the ones we knew about are
+       redirected. Anything we missed arrives here. */ -}}
+<article class="page page--404">
+  <header class="page__head">
+    <h1 class="page-title">{{ i18n "not_found_title" }}</h1>
+    <p class="page__lead">{{ i18n "not_found_body" }}</p>
+  </header>
+
+  <nav class="not-found__ways" aria-label="{{ i18n "menu" }}">
+    <a class="pill" href="{{ site.Home.RelPermalink }}">{{ i18n "back_home" }}</a>
+    {{- range slice "ruumid" "uudised" "sundmused" "galerii" }}
+    {{- with site.GetPage (printf "/%s" .) }}
+    {{- if .RegularPages }}
+    <a class="pill" href="{{ .RelPermalink }}">{{ .Title }}</a>
+    {{- end }}
+    {{- end }}
+    {{- end }}
+  </nav>
+
+  {{ partial "cta.html" . }}
+</article>
+{{ end }}

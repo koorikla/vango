@@ -51,6 +51,8 @@
     <b class="room-page__lead-in">{{ .Title }}</b>
     {{- end }}
     {{ partial "richtext.html" .Content }}
+    {{- with .Params.capacity }}<p class="fact">{{ . | markdownify }}</p>{{ end }}
+    {{- with .Params.extra }}<p class="room__extra">{{ i18n "extra_info" }}: {{ . | markdownify }}</p>{{ end }}
   </div>
 
   {{- /* The full set of photographs, at a size worth looking at. On the home

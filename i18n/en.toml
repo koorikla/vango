@@ -109,3 +109,12 @@ other = "Other places"
 
 [see_room]
 other = "See more"
+
+[not_found_title]
+other = "This page is not here"
+
+[not_found_body]
+other = "The address is wrong, or the page has moved. Here is the way on."
+
+[extra_info]
+other = "Additional info"
