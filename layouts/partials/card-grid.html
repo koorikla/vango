@@ -16,11 +16,11 @@
     <a class="card__link" href="{{ .RelPermalink }}">
       <span class="card__media">
         {{- if $cover }}
-        {{- $c := $cover.Fill "720x480 Center webp q80" }}
-        {{- /* Rooms only: this grid also renders news, events and galleries,
-               and those have no detail hero to morph into. */ -}}
-        <img src="{{ $c.RelPermalink }}" width="720" height="480" alt="" loading="lazy" decoding="async"
-             {{- if eq .Section "ruumid" }} data-vt="{{ .Slug }}"{{ end }}>
+        {{- /* The view transition name is for rooms only: this grid also
+               renders news, events and galleries, and those have no detail
+               hero to morph into. */ -}}
+        {{ partial "thumb.html" (dict "img" $cover "alt" "" "width" 720 "height" 480
+            "vt" (cond (eq .Section "ruumid") .Slug "")) }}
         {{- else }}
         <span class="card__media-empty" aria-hidden="true"></span>
         {{- end }}

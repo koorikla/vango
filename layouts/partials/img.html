@@ -1,7 +1,18 @@
 {{- /*
-  Responsive <img> from an asset path.
+  Responsive <picture> from an asset path.
   Params: src (asset path), alt, class, sizes, widths (slice), loading, fetchpriority
-  Emits AVIF/WebP srcsets with a JPEG/PNG fallback; all generated at build time.
+  Emits AVIF and WebP srcsets with a JPEG/PNG fallback; all generated at build time.
+
+  AVIF is offered first because it is materially smaller for photographs —
+  measured on this site's own pictures at 1600px, AVIF q55 came out about
+  30% under WebP q80 with no difference visible at 1:1. q45 is another 35%
+  down and does show: the stone in the sauna goes waxy and the wood loses
+  its grain, which is the one thing these photographs are for.
+
+  Not for PNG sources. Those are the room ornaments and the partner badges —
+  flat artwork, where a lossy codec is the wrong tool and (as WebP already
+  demonstrated on the theme art, going 109 kB to 293 kB) frequently loses to
+  PNG outright.
 */ -}}
 {{- $src := .src -}}
 {{- $r := resources.Get $src -}}
@@ -26,12 +37,23 @@
   {{- $webp = $webp | append (printf "%s %dw" $i.RelPermalink $i.Width) -}}
 {{- end -}}
 
+{{- $avif := slice -}}
+{{- if not $isPNG }}
+{{- range $ws }}
+  {{- $i := $r.Resize (printf "%dx avif q55" .) -}}
+  {{- $avif = $avif | append (printf "%s %dw" $i.RelPermalink $i.Width) -}}
+{{- end -}}
+{{- end -}}
+
 {{- $fbSpec := cond $isPNG "png" "jpg q80" -}}
 {{- $fb := $r.Resize (printf "%dx %s" (index (last 1 $ws) 0) $fbSpec) -}}
-<img{{ with $class }} class="{{ . }}"{{ end }}
+<picture>
+  {{- with $avif }}
+  <source type="image/avif" srcset="{{ delimit . ", " }}" sizes="{{ $sizes }}">
+  {{- end }}
+  <source type="image/webp" srcset="{{ delimit $webp ", " }}" sizes="{{ $sizes }}">
+  <img{{ with $class }} class="{{ . }}"{{ end }}
      src="{{ $fb.RelPermalink }}"
-     srcset="{{ delimit $webp ", " }}"
-     sizes="{{ $sizes }}"
      width="{{ $fb.Width }}" height="{{ $fb.Height }}"
      alt="{{ $alt }}"
      loading="{{ $loading }}" decoding="async"
@@ -39,4 +61,5 @@
      {{- /* Names this image for a cross-document view transition; the
             matching rule is generated in main.css from the room slugs. */ -}}
      {{- with .vt }} data-vt="{{ . }}"{{ end }}>
+</picture>
 {{- end -}}

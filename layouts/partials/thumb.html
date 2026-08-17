@@ -1,0 +1,28 @@
+{{- /* A fixed-size gallery thumbnail: AVIF, falling back to the WebP that
+       was here before it.
+       Params: img (image resource), alt, width, height, vt
+
+       No srcset — these are laid out at one size and the grid does not
+       change it. The <img> keeps the WebP, so a browser without AVIF sees
+       exactly what it saw before; AVIF is only ever an upgrade.
+
+       Only for photographs, on the same reasoning as img.html: a lossy
+       codec is the wrong tool for flat artwork. And nothing smaller than
+       this — the 120px room thumbs on the one-pager are ~4 kB each, which
+       is around where AVIF's container overhead starts winning back what
+       its compression saves. */ -}}
+{{- $img := .img -}}
+{{- $w := .width | default 800 -}}
+{{- $h := .height | default 600 -}}
+{{- $spec := printf "%dx%d Center" $w $h -}}
+{{- $webp := $img.Fill (printf "%s webp q80" $spec) -}}
+<picture>
+  {{- if ne (path.Ext $img.Name) ".png" }}
+  <source type="image/avif" srcset="{{ ($img.Fill (printf "%s avif q55" $spec)).RelPermalink }}">
+  {{- end }}
+  <img src="{{ $webp.RelPermalink }}" width="{{ $w }}" height="{{ $h }}"
+       alt="{{ .alt }}" loading="lazy" decoding="async"
+       {{- /* Names this image for a cross-document view transition; the
+              matching rule is generated in main.css from the room slugs. */ -}}
+       {{- with .vt }} data-vt="{{ . }}"{{ end }}>
+</picture>

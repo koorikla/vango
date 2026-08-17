@@ -64,13 +64,11 @@
     {{- range $n, $g := . }}
     {{- with resources.Get $g }}
     {{- $full := .Resize "1600x webp q78" }}
-    {{- $thumb := .Fill "800x600 Center webp q80" }}
     <a class="gallery-grid__item" href="{{ $full.RelPermalink }}"
        data-lightbox="room-{{ $.File.ContentBaseName }}"
        data-caption="{{ $.Title }}">
-      <img src="{{ $thumb.RelPermalink }}" width="800" height="600"
-           alt="{{ printf "%s — %s" $.Title (printf (i18n "image_of") (add $n 2) (add (len $gallery) 1)) }}"
-           loading="lazy" decoding="async">
+      {{ partial "thumb.html" (dict "img" .
+          "alt" (printf "%s — %s" $.Title (printf (i18n "image_of") (add $n 2) (add (len $gallery) 1)))) }}
     </a>
     {{- end }}
     {{- end }}
