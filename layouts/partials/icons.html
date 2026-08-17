@@ -2,31 +2,46 @@
      Every icon the site publishes, all derived from the one logo asset so
      there is no set of hand-cut PNGs to keep in step with it.
 
-     They are flattened onto the paper colour rather than left transparent.
-     The mark is black line art: on a transparent ground it disappears into
-     a dark browser tab strip, and iOS composites an apple-touch-icon onto
-     black. Paper behind it reads on either, and matches the page it opens.
+     They sit on paper rather than on nothing. The mark is black line art:
+     left transparent it disappears into a dark browser tab strip, and iOS
+     composites an apple-touch-icon onto black. Paper behind it reads on
+     either, and matches the page the icon opens.
+
+     Getting an opaque ground is more roundabout than it should be. Hugo has
+     no flatten filter, and images.Padding's canvas colour fills only the
+     border it adds, not the transparency inside the image. What does
+     flatten is writing to a format with no alpha channel: JPEG, which Hugo
+     fills with [imaging] bgColor. So the mark is rendered once as a JPEG, a
+     square is cut from a corner the circle never reaches — pure paper, no
+     mark in it — and that is blown back up into a sheet to composite each
+     icon on. One source of truth for the colour, in hugo.toml.
 
      Returns a dict, so the <head> and the web app manifest can describe the
      same files without either restating the sizes.
      ------------------------------------------------------------------ */ -}}
-{{- $paper := "#fdfaf6" -}}
 {{- $icons := dict -}}
 {{- with resources.Get "img/theme/logo500.png" -}}
+  {{- $mark := . -}}
+  {{- /* Averaged down to a single pixel before it is used. JPEG leaves a
+         little noise even in a flat corner at q100, and an upscaled sheet
+         of almost-but-not-quite one colour is something PNG cannot pack —
+         it was costing 25 kB an icon. One pixel, blown up, is exact. */ -}}
+  {{- $sheet := (($mark.Resize "512x512 jpg q100").Crop "48x48 TopLeft").Resize "1x1 png" -}}
+
   {{- /* The maskable copy is the odd one out. Android crops a home-screen
-         icon to whatever shape the launcher uses, and only guarantees the
+         icon to whatever shape the launcher uses and only guarantees the
          centre 80% survives; the mark is a circle that touches its own
-         edges, so at full bleed the ring would be shaved. 400px of mark on
-         a 512px sheet keeps all of it inside that circle.
+         edges, so at full bleed the ring would be shaved. 400px of mark
+         centred on a 512px sheet keeps all of it inside that circle.
 
          `Resize "NxN"` rather than `Fill`: the source is 500x499, and a
          quarter-percent of squash is less visible than a cropped ring. */ -}}
   {{- $icons = dict
-      "tab"      (.Resize "32x32 png"   | images.Filter (images.Padding 0 $paper))
-      "touch"    (.Resize "180x180 png" | images.Filter (images.Padding 0 $paper))
-      "small"    (.Resize "192x192 png" | images.Filter (images.Padding 0 $paper))
-      "large"    (.Resize "512x512 png" | images.Filter (images.Padding 0 $paper))
-      "maskable" (.Resize "400x400 png" | images.Filter (images.Padding 56 $paper))
+      "tab"      ($sheet.Resize "32x32 png"   | images.Filter (images.Overlay ($mark.Resize "32x32 png")    0  0))
+      "touch"    ($sheet.Resize "180x180 png" | images.Filter (images.Overlay ($mark.Resize "180x180 png")  0  0))
+      "small"    ($sheet.Resize "192x192 png" | images.Filter (images.Overlay ($mark.Resize "192x192 png")  0  0))
+      "large"    ($sheet.Resize "512x512 png" | images.Filter (images.Overlay ($mark.Resize "512x512 png")  0  0))
+      "maskable" ($sheet.Resize "512x512 png" | images.Filter (images.Overlay ($mark.Resize "400x400 png") 56 56))
   -}}
 {{- end -}}
 {{- return $icons -}}
