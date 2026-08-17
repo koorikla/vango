@@ -86,6 +86,11 @@ disableKinds = ["taxonomy", "term"]
 
 [imaging]
   resampleFilter = "Lanczos"
+  # What shows through where a transparent source is written to a format
+  # that has no alpha channel — which is how the icons get an opaque paper
+  # ground under the black mark. Paper, not the default white, so the share
+  # card's JPEG matches the page as well.
+  bgColor = "#fdfaf6"
   [imaging.jpeg]
     quality = 80
   [imaging.webp]
