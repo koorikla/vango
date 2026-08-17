@@ -64,3 +64,39 @@ other = "{{ . }} pilti"
 
 [latest_news]
 other = "Värsked uudised"
+
+[coming_up]
+other = "Tulemas Imedemaal"
+
+[all_events]
+other = "Kõik sündmused"
+
+[newer_post]
+other = "Uuem"
+
+[older_post]
+other = "Vanem"
+
+[more_from]
+other = "Veel siit"
+
+[book_cta_title]
+other = "Tule külla"
+
+[book_cta_body]
+other = "Vaata vabu kuupäevi ja broneeri otse — või kirjuta meile ja mõtleme koos välja, mis Sinu seltskonnale sobib."
+
+[write_to_us]
+other = "Kirjuta meile"
+
+[page_nav]
+other = "Lehed"
+
+[next_page]
+other = "Järgmine leht"
+
+[prev_page]
+other = "Eelmine leht"
+
+[subscribe]
+other = "Telli lugemiseks"

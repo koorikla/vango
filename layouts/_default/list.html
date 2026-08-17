@@ -34,11 +34,15 @@
     {{ partial "card-grid.html" (sort . "Params.eventDate" "desc") }}
     {{- end }}
   {{- else }}
-    {{ partial "card-grid.html" $pages }}
+    {{- /* News and galleries page rather than growing without end — these are
+           the sections that gain entries week after week. */ -}}
+    {{- $paginator := .Paginate $pages }}
+    {{ partial "card-grid.html" $paginator.Pages }}
+    {{ partial "pagination.html" . }}
   {{- end }}
 
   {{- with .OutputFormats.Get "rss" }}
-  <p class="page__feed"><a href="{{ .RelPermalink }}">RSS</a></p>
+  <p class="page__feed"><a href="{{ .RelPermalink }}">{{ i18n "subscribe" }} &middot; RSS</a></p>
   {{- end }}
 </article>
 {{ end }}

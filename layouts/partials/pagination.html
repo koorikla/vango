@@ -1,0 +1,24 @@
+{{- /* Numbered pager. Only renders once a section has outgrown a single
+       page, so short sections stay uncluttered. */ -}}
+{{- $p := .Paginator -}}
+{{- if gt $p.TotalPages 1 }}
+<nav class="pager" aria-label="{{ i18n "page_nav" }}">
+  {{- with $p.Prev }}
+  <a class="pager__step" href="{{ .URL }}" rel="prev" aria-label="{{ i18n "prev_page" }}">&larr;</a>
+  {{- end }}
+  <ul class="pager__list">
+    {{- range $p.Pagers }}
+    <li>
+      {{- if eq . $p }}
+      <span class="pager__num" aria-current="page">{{ .PageNumber }}</span>
+      {{- else }}
+      <a class="pager__num" href="{{ .URL }}">{{ .PageNumber }}</a>
+      {{- end }}
+    </li>
+    {{- end }}
+  </ul>
+  {{- with $p.Next }}
+  <a class="pager__step" href="{{ .URL }}" rel="next" aria-label="{{ i18n "next_page" }}">&rarr;</a>
+  {{- end }}
+</nav>
+{{- end }}

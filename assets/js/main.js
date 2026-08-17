@@ -26,6 +26,24 @@
     });
   }
 
+  /* ------------------------------------------------------- sticky navbar */
+  /* The sentinel is a 1px marker sitting immediately above the nav. Once it
+     has scrolled off the top the bar is detached, and the paper backing and
+     the small crest fade in behind it. Watching a marker rather than a
+     scroll offset keeps this correct however tall the header renders. */
+  const sentinel = document.querySelector('.stick-sentinel');
+  if (sentinel) {
+    new IntersectionObserver(
+      ([entry]) => {
+        document.body.classList.toggle(
+          'is-stuck',
+          !entry.isIntersecting && entry.boundingClientRect.top < 0
+        );
+      },
+      { threshold: 0 }
+    ).observe(sentinel);
+  }
+
   /* -------------------------------------------------------- back to top */
   const toTop = document.querySelector('.to-top');
   if (toTop) {

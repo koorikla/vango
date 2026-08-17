@@ -37,6 +37,9 @@ disableKinds = ["taxonomy", "term"]
       sundmused = "/events/:slug/"
       galerii = "/gallery/:slug/"
 
+[pagination]
+  pagerSize = 12
+
 [outputs]
   home = ["HTML"]
   section = ["HTML", "RSS"]

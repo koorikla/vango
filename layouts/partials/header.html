@@ -6,7 +6,15 @@
   (dict "id" "partnerid" "label" (index (where $d.nav "id" "3") 0).label)
   (dict "id" "kontakt" "label" (index (where $d.nav "id" "4") 0).label)
 -}}
-<header class="site-header">
+{{- /* The home page opens with the full crest; every other page gets a
+       compact bar, because a news post should start with the news and not
+       with a screen of branding. */ -}}
+{{- $compact := not .IsHome -}}
+
+<header class="site-header{{ if $compact }} site-header--compact{{ end }}">
+  {{- /* Source order is the same in both layouts — utility row, then crest.
+         The compact header only re-places them with grid areas, so the two
+         read identically to a screen reader. */ -}}
   <div class="site-header__top">
     <a class="social social--fb" href="{{ site.Params.facebook }}" target="_blank" rel="noopener"
        aria-label="Facebook ({{ i18n "opens_new_window" }})">
@@ -43,15 +51,40 @@
     {{- with resources.Get "img/theme/logo500.png" }}
     {{- $l := .Resize "260x webp q85" }}
     <img class="logo__mark" src="{{ $l.RelPermalink }}" width="{{ $l.Width }}" height="{{ $l.Height }}"
-         alt="{{ site.Title }}" fetchpriority="high" decoding="async">
+         alt="" fetchpriority="high" decoding="async">
     {{- end }}
+    {{- /* At crest size the name is legible inside the artwork; shrunk to a
+           bar-height mark it is not, so the compact header sets it in type
+           beside the mark instead. Hidden — not absent — on the home page. */ -}}
+    <span class="logo__name">{{ site.Title }}</span>
   </a>
+</header>
 
-  <nav class="site-nav" aria-label="{{ i18n "menu" }}">
+{{- /* A 1px marker immediately above the bar, so the script can tell exactly
+       when it has left the flow. */ -}}
+<span class="stick-sentinel" aria-hidden="true"></span>
+
+{{- /* Deliberately a sibling of <header>, not a child of it: a sticky element
+       can only travel inside its own parent's box, so a nav nested in the
+       header would scroll away with the crest instead of parking at the top
+       of the page. */ -}}
+<nav class="site-nav{{ if $compact }} site-nav--compact{{ end }}" aria-label="{{ i18n "menu" }}">
+  <div class="site-nav__bar">
+    {{- /* Fades in once the bar has stuck and the crest above it has scrolled
+         away, so the travelling bar still carries the mark. Decorative: the
+         real logo link is a few lines up. */ -}}
+    <span class="site-nav__brand" aria-hidden="true">
+      {{- with resources.Get "img/theme/logo500.png" }}
+      {{- $b := .Resize "72x webp q85" }}
+      <img src="{{ $b.RelPermalink }}" width="{{ $b.Width }}" height="{{ $b.Height }}" alt="" decoding="async">
+      {{- end }}
+    </span>
+
     <button class="site-nav__toggle" type="button" aria-expanded="false" aria-controls="site-menu">
       <span class="site-nav__bars" aria-hidden="true"></span>
       <span>{{ i18n "menu" }}</span>
     </button>
+
     <ul class="site-nav__list" id="site-menu">
       {{- /* On the home page the first five are in-page anchors; anywhere else
              they have to jump back to the home page first. */ -}}
@@ -73,11 +106,12 @@
       {{- end }}
       {{- end }}
       {{- end }}
-      <li>
-        <a class="site-nav__book" href="{{ $d.booking.url }}" target="_blank" rel="noopener">
-          {{ $d.booking.label }}
-        </a>
-      </li>
     </ul>
-  </nav>
-</header>
+
+    {{- /* Outside the collapsible list on purpose: the one thing the site is
+           for must not be hidden behind a hamburger tap on a phone. */ -}}
+    <a class="site-nav__book" href="{{ $d.booking.url }}" target="_blank" rel="noopener">
+      {{ $d.booking.label }}
+    </a>
+  </div>
+</nav>

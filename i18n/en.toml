@@ -64,3 +64,39 @@ other = "{{ . }} photos"
 
 [latest_news]
 other = "Latest news"
+
+[coming_up]
+other = "Coming up at Wonderland"
+
+[all_events]
+other = "All events"
+
+[newer_post]
+other = "Newer"
+
+[older_post]
+other = "Older"
+
+[more_from]
+other = "More from here"
+
+[book_cta_title]
+other = "Come and stay"
+
+[book_cta_body]
+other = "Check the free dates and book straight away — or write to us and we will work out what suits your group."
+
+[write_to_us]
+other = "Write to us"
+
+[page_nav]
+other = "Pages"
+
+[next_page]
+other = "Next page"
+
+[prev_page]
+other = "Previous page"
+
+[subscribe]
+other = "Subscribe"

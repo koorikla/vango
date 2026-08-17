@@ -1,11 +1,35 @@
 {{- $d := index hugo.Data site.Language.Lang "site" -}}
+
+{{- /* ------------------------------------------------------------------
+     Per-page metadata. The home page keeps the hand-written SEO title and
+     description from site.json; every other page describes itself, because
+     news and event posts are the pages that actually get shared and indexed.
+     ------------------------------------------------------------------ */ -}}
+{{- $title := $d.meta.seoTitle | default site.Title -}}
+{{- $desc  := $d.meta.description -}}
+{{- if not .IsHome -}}
+  {{- $title = printf "%s — %s" .Title site.Title -}}
+  {{- $desc = .Description | default .Params.summary -}}
+  {{- if not $desc }}{{ $desc = .Summary | plainify | truncate 160 }}{{ end -}}
+{{- end -}}
+
+{{- /* Share image: the page's own cover, then the first picture in its
+     bundle, then the site-wide still. */ -}}
+{{- $ogSrc := resources.Get "img/theme/video-still.jpg" -}}
+{{- with .Resources.GetMatch "{*.jpg,*.jpeg,*.png,*.webp}" }}{{ $ogSrc = . }}{{ end -}}
+{{- with .Params.cover }}
+  {{- with ($.Resources.GetMatch . | default (resources.Get .)) }}{{ $ogSrc = . }}{{ end }}
+{{- end -}}
+
+{{- $bodyClass := "page-inner" -}}
+{{- if .IsHome }}{{ $bodyClass = "page-home" }}{{ end -}}
 <!doctype html>
 <html lang="{{ site.Language.Locale }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ $d.meta.seoTitle | default site.Title }}</title>
-  <meta name="description" content="{{ $d.meta.description }}">
+  <title>{{ $title }}</title>
+  <meta name="description" content="{{ $desc }}">
 
   {{- with .OutputFormats.Get "html" }}<link rel="canonical" href="{{ .Permalink }}">{{ end }}
   {{- range .AllTranslations }}
@@ -13,14 +37,20 @@
   {{- end }}
   <link rel="alternate" hreflang="x-default" href="{{ site.Home.Permalink }}">
 
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="{{ cond (eq .Kind "page") "article" "website" }}">
   <meta property="og:site_name" content="{{ site.Title }}">
-  <meta property="og:title" content="{{ $d.meta.seoTitle }}">
-  <meta property="og:description" content="{{ $d.meta.description }}">
+  <meta property="og:title" content="{{ $title }}">
+  <meta property="og:description" content="{{ $desc }}">
   <meta property="og:url" content="{{ .Permalink }}">
-  {{- with resources.Get "img/theme/video-still.jpg" }}
-  {{- $og := .Resize "1200x630 Center q80 webp" }}
+  <meta property="og:locale" content="{{ replace site.Language.Locale "-" "_" }}">
+  {{- with $ogSrc }}
+  {{- $og := .Fill "1200x630 Center q80 webp" }}
   <meta property="og:image" content="{{ $og.Permalink }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  {{- end }}
+  {{- if eq .Kind "page" }}
+  {{- with .Date }}{{ if not .IsZero }}<meta property="article:published_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}">{{ end }}{{ end }}
   {{- end }}
   <meta name="twitter:card" content="summary_large_image">
 
@@ -30,13 +60,20 @@
   <link rel="apple-touch-icon" href="{{ $ico.RelPermalink }}">
   {{- end }}
 
+  {{- /* News and events are published often enough that a reader may well
+         subscribe. Advertise the feed of the section being read. */ -}}
+  {{- $feedOn := cond (eq .Kind "page") .Parent . }}
+  {{- with $feedOn }}{{ with .OutputFormats.Get "rss" }}
+  <link rel="alternate" type="application/rss+xml" title="{{ $feedOn.Title }} — {{ site.Title }}" href="{{ .RelPermalink }}">
+  {{- end }}{{ end }}
+
   {{- $css := resources.Get "css/main.css" | resources.ExecuteAsTemplate "css/main.css" . }}
   {{- if hugo.IsProduction }}{{ $css = $css | minify | fingerprint }}{{ end }}
   <link rel="stylesheet" href="{{ $css.RelPermalink }}"{{ with $css.Data.Integrity }} integrity="{{ . }}"{{ end }}>
 
   {{ partial "schema.html" . }}
 </head>
-<body>
+<body class="{{ $bodyClass }}">
   <a class="skip-link" href="#main">{{ i18n "skip_to_content" }}</a>
   {{ partial "backdrop.html" . }}
   {{ partial "header.html" . }}

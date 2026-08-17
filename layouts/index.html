@@ -2,6 +2,11 @@
 {{- $d := index hugo.Data site.Language.Lang "site" -}}
 
 <h1 class="page-title">{{ $d.meta.heading }}</h1>
+{{- /* One sentence saying what the place actually is. Without it the page
+       opened on a crest, a name, and then straight into room descriptions —
+       a first-time visitor had to read three rooms to find out this is
+       accommodation. Edit it in data/<lang>/site.json. */ -}}
+{{- with $d.meta.tagline }}<p class="page__lead page__lead--home">{{ . }}</p>{{ end }}
 
 {{- /* ============================ RUUMID ============================ */ -}}
 <section id="ruumid" class="rooms" aria-labelledby="ruumid-h">
@@ -58,8 +63,10 @@
           {{- end }}
           {{- end }}
         </ul>
+        {{- /* Says how many pictures are behind it rather than just "Photos",
+               so the click has a known size before you make it. */ -}}
         <button class="thumbs__more" type="button" data-open-lightbox="{{ $p.Slug }}">
-          {{ i18n "photos" }}
+          {{ i18n "photo_count" (add (len .) 1) }}
         </button>
       </div>
       {{- end }}
@@ -117,6 +124,40 @@
   </div>
 </section>
 
+{{- /* =========================== SÜNDMUSED ========================== */ -}}
+{{- /* What is on next matters more to a returning visitor than the partner
+       list, so the two changing sections sit above it. Both appear only when
+       they have something to say — the page never carries an empty shelf. */ -}}
+{{- with site.GetPage "/sundmused" }}
+{{- $now := now.Unix }}
+{{- $upcoming := slice }}
+{{- range .RegularPages }}
+  {{- if ge (time.AsTime .Params.eventDate).Unix $now }}{{ $upcoming = $upcoming | append . }}{{ end }}
+{{- end }}
+{{- with $upcoming }}
+<section id="sundmused" class="band" aria-labelledby="sundmused-h">
+  <h2 class="band__title" id="sundmused-h">{{ i18n "coming_up" }}</h2>
+  {{ partial "card-grid.html" (first 3 (sort . "Params.eventDate" "asc")) }}
+  <p class="band__more">
+    <a class="pill" href="{{ (site.GetPage "/sundmused").RelPermalink }}">{{ i18n "all_events" }} &rarr;</a>
+  </p>
+</section>
+{{- end }}
+{{- end }}
+
+{{- /* ============================ UUDISED =========================== */ -}}
+{{- with site.GetPage "/uudised" }}
+{{- with first 3 .RegularPages }}
+<section id="uudised" class="band" aria-labelledby="uudised-h">
+  <h2 class="band__title" id="uudised-h">{{ i18n "latest_news" }}</h2>
+  {{ partial "card-grid.html" . }}
+  <p class="band__more">
+    <a class="pill" href="{{ (site.GetPage "/uudised").RelPermalink }}">{{ i18n "all_news" }} &rarr;</a>
+  </p>
+</section>
+{{- end }}
+{{- end }}
+
 {{- /* ========================== PARTNERID =========================== */ -}}
 <section id="partnerid" class="band" aria-labelledby="partnerid-h">
   <h2 class="band__title" id="partnerid-h">{{ $d.partnerid.title }}</h2>
@@ -138,22 +179,6 @@
     {{- end }}
   </ul>
 </section>
-
-{{- /* ============================ UUDISED =========================== */ -}}
-{{- /* Only appears once there is something to show, so the page never has an
-       empty section sitting on it. */ -}}
-{{- with site.GetPage "/uudised" }}
-{{- $latest := first 3 .RegularPages }}
-{{- with $latest }}
-<section id="uudised" class="band" aria-labelledby="uudised-h">
-  <h2 class="band__title" id="uudised-h">{{ i18n "latest_news" }}</h2>
-  {{ partial "card-grid.html" . }}
-  <p class="band__more">
-    <a class="pill" href="{{ (site.GetPage "/uudised").RelPermalink }}">{{ i18n "all_news" }} &rarr;</a>
-  </p>
-</section>
-{{- end }}
-{{- end }}
 
 {{- /* =========================== KONTAKT ============================ */ -}}
 <section id="kontakt" class="band band--contact" aria-labelledby="kontakt-h">

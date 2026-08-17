@@ -23,10 +23,16 @@ Rooms, meals, activities, partners and contact all live on `/`. They are
   (`render: never` in `hugo.toml`); they are fragments of the home page.
 - **Everything else on the home page** — `data/et/site.json` and
   `data/en/site.json`. Section titles, the partner list, contact details and
-  the activities text live there.
+  the activities text live there. `meta.tagline` is the one-line description
+  under the site name; it is the first thing a first-time visitor reads.
 
 Adding a room is rare, so it stays a two-file job. Adding a *post* is not,
 which is what the sections below are for.
+
+The bottom of the home page builds itself from those posts: **upcoming
+events** and then the **three newest news items** appear above the partner
+list, each section showing up only once it has something in it. Write a post
+and it lands on the home page without touching a template.
 
 ---
 
@@ -106,6 +112,18 @@ Override with `slug: "midagi-muud"` in front matter.
 
 `draft: true` keeps a page out of the production build. `npm run dev` shows
 drafts; `npm run build` does not.
+
+## What happens as a section grows
+
+Nothing you have to maintain. News and gallery lists page themselves after
+**12 entries** (`pagerSize` in `hugo.toml`); events stay on one page because
+they are already split into Upcoming and Past. Each post links to the next
+and previous one in its section on its own.
+
+The `summary` line and the `cover` image are what a post shows as a card, in
+its RSS feed, and on Facebook — a post without them falls back to its first
+paragraph and first picture, which is usually worse. They are the two lines
+worth filling in every time.
 
 ## Placeholder content to delete
 

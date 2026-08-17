@@ -3,6 +3,7 @@
     "seoTitle": "Vango Imedemaa - Vango Imedemaa : Vango Imedemaa",
     "description": "To find activities for your stay or private event, please contact us at info@vango.ee or our partner companies.",
     "heading": "Vango Wonderland",
+    "tagline": "Stays, summer days and weddings in the quiet of the Pärnumaa forests — with a healing sauna, a hot tub and a genuine smoke sauna.",
     "ogImage": "img/uploads/2015-01-DJI_0536-scaled-e1620747320239.jpg"
   },
   "nav": [
@@ -124,7 +125,7 @@
       },
       {
         "title": "Contacts",
-        "body": "<p>E-mail: info@vango.ee</p><p>Phone: (+372) 516 3259 / (+372) 506 3365</p><p>Facebook: <a href=\"https://www.facebook.com/vangoimedemaa\" target=\"_blank\" rel=\"noopener\">Link</a></p><p>Instagram: <a href=\"https://www.instagram.com/vangotalu/\" target=\"_blank\" rel=\"noopener\">Link</a></p>"
+        "body": "<p>E-mail: <a href=\"mailto:info@vango.ee\">info@vango.ee</a></p><p>Phone: <a href=\"tel:+3725163259\">(+372) 516 3259</a> / <a href=\"tel:+3725063365\">(+372) 506 3365</a></p><p><a href=\"https://www.facebook.com/vangoimedemaa\" target=\"_blank\" rel=\"noopener\">Facebook</a> &middot; <a href=\"https://www.instagram.com/vangotalu/\" target=\"_blank\" rel=\"noopener\">Instagram</a></p>"
       },
       {
         "title": "Coordinates",
@@ -134,7 +135,7 @@
     "mapUrl": "https://www.google.com/maps/place/58%C2%B007'55.2%22N+24%C2%B045'36.0%22E/@58.1279662,24.7532194,12z/data=!4m2!3m1!1s0x0:0x0?hl=en"
   },
   "credit": {
-    "url": "http://www.martinmarss.ee/",
-    "label": "Web by Märss"
+    "url": "https://www.sparky.ee",
+    "label": "Web by Kaur"
   }
 }

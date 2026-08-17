@@ -45,5 +45,33 @@
       {{ partial "photo-grid.html" (dict "images" . "group" $.File.ContentBaseName "caption" $.Title) }}
     {{- end }}
   {{- end }}
+
+  {{ partial "cta.html" . }}
+
+  {{- /* Somewhere to go next. Without this every post is a dead end and the
+         only way on is the browser's Back button — which matters more the
+         more posts there are. */ -}}
+  {{- $prev := .PrevInSection }}
+  {{- $next := .NextInSection }}
+  {{- if or $prev $next }}
+  <nav class="post-nav" aria-label="{{ .Parent.Title }}">
+    {{- with $next }}
+    <a class="post-nav__link post-nav__link--prev" href="{{ .RelPermalink }}" rel="next">
+      <span class="post-nav__dir">&larr; {{ i18n "newer_post" }}</span>
+      <span class="post-nav__title">{{ .Title }}</span>
+    </a>
+    {{- end }}
+    {{- with $prev }}
+    <a class="post-nav__link post-nav__link--next" href="{{ .RelPermalink }}" rel="prev">
+      <span class="post-nav__dir">{{ i18n "older_post" }} &rarr;</span>
+      <span class="post-nav__title">{{ .Title }}</span>
+    </a>
+    {{- end }}
+  </nav>
+  {{- end }}
+
+  <p class="band__more">
+    <a class="pill" href="{{ .Parent.RelPermalink }}">{{ .Parent.Title }} &rarr;</a>
+  </p>
 </article>
 {{ end }}

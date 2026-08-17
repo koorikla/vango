@@ -1,0 +1,12 @@
+{{- /* The booking nudge that closes a post. A reader who has just finished a
+       news item or an event page is the most likely person on the site to
+       want a date — and the header CTA is a scroll away by then. */ -}}
+{{- $d := index hugo.Data site.Language.Lang "site" -}}
+<aside class="cta">
+  <h2 class="cta__title">{{ i18n "book_cta_title" }}</h2>
+  <p class="cta__body">{{ i18n "book_cta_body" }}</p>
+  <p class="cta__actions">
+    <a class="cta__book" href="{{ $d.booking.url }}" target="_blank" rel="noopener">{{ $d.booking.label }}</a>
+    <a class="pill" href="mailto:{{ site.Params.email }}">{{ i18n "write_to_us" }}</a>
+  </p>
+</aside>

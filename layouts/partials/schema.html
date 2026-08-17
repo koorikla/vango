@@ -1,11 +1,13 @@
 {{- $d := index hugo.Data site.Language.Lang "site" -}}
-{{- $addr := "" }}{{ $tel := "" }}
+{{- $tel := "" }}
 {{- range $d.kontakt.columns }}
   {{- $body := replaceRE "<[^>]+>" "\n" .body }}
   {{- if findRE "(?i)(telefon|phone)" $body }}{{ $tel = trim (index (findRE "[0-9][0-9 ]{5,}" $body) 0) " " }}{{ end }}
 {{- end }}
-<script type="application/ld+json">
-{{ dict
+
+{{- /* The place itself. Emitted on the home page only — repeating the same
+       business on every post would just compete with the post's own markup. */ -}}
+{{- $place := dict
   "@context" "https://schema.org"
   "@type" "Campground"
   "name" site.Title
@@ -20,6 +22,56 @@
     "addressRegion" "Pärnu maakond"
     "addressCountry" "EE")
   "geo" (dict "@type" "GeoCoordinates" "latitude" 58.131389 "longitude" 24.762500)
-  "sameAs" (slice site.Params.facebook site.Params.instagram)
-  | jsonify (dict "indent" "  ") | safeJS }}
+  "sameAs" (slice site.Params.facebook site.Params.instagram) -}}
+
+{{- /* A post's own markup: an Event carries its dates, everything else is an
+       article. Both are what search engines and social cards read. */ -}}
+{{- $img := "" -}}
+{{- with .Resources.GetMatch "{*.jpg,*.jpeg,*.png,*.webp}" }}{{ $img = .Permalink }}{{ end -}}
+{{- with .Params.cover }}
+  {{- with ($.Resources.GetMatch . | default (resources.Get .)) }}{{ $img = .Permalink }}{{ end }}
+{{- end -}}
+
+{{- $data := $place -}}
+{{- if eq .Kind "page" -}}
+  {{- $summary := .Description | default .Params.summary | default (.Summary | plainify | truncate 200) -}}
+  {{- if .Params.eventDate -}}
+    {{- $start := time.AsTime .Params.eventDate -}}
+    {{- $data = dict
+      "@context" "https://schema.org"
+      "@type" "Event"
+      "name" .Title
+      "description" $summary
+      "url" .Permalink
+      "startDate" ($start.Format "2006-01-02")
+      "eventStatus" "https://schema.org/EventScheduled"
+      "location" (dict
+        "@type" "Place"
+        "name" (.Params.location | default site.Title)
+        "address" (dict "@type" "PostalAddress" "addressLocality" "Laiksaare küla, Saarde vald" "addressCountry" "EE"))
+      "organizer" (dict "@type" "Organization" "name" site.Title "url" site.Home.Permalink) -}}
+    {{- with .Params.eventEnd }}{{ $data = merge $data (dict "endDate" ((time.AsTime .).Format "2006-01-02")) }}{{ end -}}
+  {{- else -}}
+    {{- $data = dict
+      "@context" "https://schema.org"
+      "@type" "Article"
+      "headline" .Title
+      "description" $summary
+      "url" .Permalink
+      "inLanguage" site.Language.Lang
+      "publisher" (dict "@type" "Organization" "name" site.Title "url" site.Home.Permalink) -}}
+    {{- with .Date }}{{ if not .IsZero }}{{ $data = merge $data (dict "datePublished" (.Format "2006-01-02")) }}{{ end }}{{ end -}}
+  {{- end -}}
+  {{- with $img }}{{ $data = merge $data (dict "image" .) }}{{ end -}}
+{{- else if not .IsHome -}}
+  {{- $data = dict
+    "@context" "https://schema.org"
+    "@type" "CollectionPage"
+    "name" .Title
+    "description" (.Description | default $d.meta.description)
+    "url" .Permalink
+    "isPartOf" (dict "@type" "WebSite" "name" site.Title "url" site.Home.Permalink) -}}
+{{- end -}}
+<script type="application/ld+json">
+{{ $data | jsonify (dict "indent" "  ") | safeJS }}
 </script>
