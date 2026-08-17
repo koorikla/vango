@@ -1,0 +1,32 @@
+{{- /* ------------------------------------------------------------------
+     Every icon the site publishes, all derived from the one logo asset so
+     there is no set of hand-cut PNGs to keep in step with it.
+
+     They are flattened onto the paper colour rather than left transparent.
+     The mark is black line art: on a transparent ground it disappears into
+     a dark browser tab strip, and iOS composites an apple-touch-icon onto
+     black. Paper behind it reads on either, and matches the page it opens.
+
+     Returns a dict, so the <head> and the web app manifest can describe the
+     same files without either restating the sizes.
+     ------------------------------------------------------------------ */ -}}
+{{- $paper := "#fdfaf6" -}}
+{{- $icons := dict -}}
+{{- with resources.Get "img/theme/logo500.png" -}}
+  {{- /* The maskable copy is the odd one out. Android crops a home-screen
+         icon to whatever shape the launcher uses, and only guarantees the
+         centre 80% survives; the mark is a circle that touches its own
+         edges, so at full bleed the ring would be shaved. 400px of mark on
+         a 512px sheet keeps all of it inside that circle.
+
+         `Resize "NxN"` rather than `Fill`: the source is 500x499, and a
+         quarter-percent of squash is less visible than a cropped ring. */ -}}
+  {{- $icons = dict
+      "tab"      (.Resize "32x32 png"   | images.Filter (images.Padding 0 $paper))
+      "touch"    (.Resize "180x180 png" | images.Filter (images.Padding 0 $paper))
+      "small"    (.Resize "192x192 png" | images.Filter (images.Padding 0 $paper))
+      "large"    (.Resize "512x512 png" | images.Filter (images.Padding 0 $paper))
+      "maskable" (.Resize "400x400 png" | images.Filter (images.Padding 56 $paper))
+  -}}
+{{- end -}}
+{{- return $icons -}}

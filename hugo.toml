@@ -47,8 +47,26 @@ disableKinds = ["taxonomy", "term"]
 [pagination]
   pagerSize = 12
 
+# A web app manifest, one per language, so adding Vango to an Android home
+# screen gives the right name, the right icon and the paper colour behind it
+# instead of a screenshot and a truncated URL. Hugo has no built-in output
+# format for it; declaring the media type and the format is all it takes,
+# and layouts/index.manifest.webmanifest renders it.
+[mediaTypes]
+  [mediaTypes."application/manifest+json"]
+    suffixes = ["webmanifest"]
+
+[outputFormats]
+  [outputFormats.manifest]
+    mediaType = "application/manifest+json"
+    baseName = "manifest"
+    isPlainText = true
+    # Not an alternate rendering of the home page — it is described by its
+    # own <link rel="manifest">, and should stay out of any rel="alternate".
+    notAlternative = true
+
 [outputs]
-  home = ["HTML"]
+  home = ["HTML", "manifest"]
   section = ["HTML", "RSS"]
 
 # News, events and galleries are streams worth subscribing to. Rooms are not:
