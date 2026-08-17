@@ -520,7 +520,21 @@ main {
    in absolute pixels (~120 rules). Here each layer gets a resting offset
    so it peeks out from behind the photo, and flies further out on hover —
    the same character, but it survives new rooms and any circle size. */
-.room__anim { position: absolute; inset: 0; z-index: 1; }
+/* Behind the text, always. These are white cut-outs on a dark outline, and
+   an ornament that drifts across a paragraph blanks the words underneath —
+   the dragon's limbs were sitting on top of "Aladini imeaas" itself.
+
+   The box is grown well past the circle so the mask below has somewhere to
+   fade out across; the layers are positioned from its centre, so enlarging
+   it symmetrically leaves their geometry untouched. */
+.room__anim {
+  position: absolute; inset: -60%; z-index: -1;
+  /* Every ornament is a cut-out except Heliaed's starry patch, which is a
+     hard-edged rectangle and read as a grey slab dropped beside the text.
+     Fading the whole layer towards its edges turns that slab into a drift
+     of stars and softens where the others end, without touching the art. */
+  mask-image: radial-gradient(closest-side, #000 26%, rgb(0 0 0 / .45) 48%, transparent 68%);
+}
 .room__anim-layer {
   position: absolute; top: 50%; left: 50%;
   /* --w/--h are the artwork's natural pixel size, which the original theme
