@@ -1,5 +1,5 @@
 ---
 title: "Events"
 translationKey: "sundmused"
-description: "Upcoming retreats, courses and celebrations at the Wonderland."
+description: "Retreats, courses and celebrations at the Wonderland — upcoming and past."
 ---
