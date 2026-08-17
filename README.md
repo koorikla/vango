@@ -38,7 +38,8 @@ That's the whole job. The rest of this file is detail.
 
 ## First time only — getting set up
 
-You need three things installed. This takes about twenty minutes, once.
+You need three things installed. Two you can do yourself in a few minutes; the
+third is Kaur's job.
 
 ### 1. GitHub Desktop
 
@@ -48,47 +49,44 @@ never have to type a git command.
 
 ### 2. Hugo
 
-Hugo is the program that turns the text files into a website. It's installed
-from the Terminal.
+Hugo is the program that turns the text files into a website, and it's what
+`hugo server -D` starts. **Ask Kaur to install it** — it's a one-off, and it's
+the only fiddly part.
 
-Open **Terminal** (press Cmd + Space, type "Terminal", press Enter) and paste
-this, then press Enter:
-
-```
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-That installs Homebrew, a tool for installing other tools. It will ask for your
-Mac password — that's normal, and nothing appears on screen as you type it.
-Follow any instructions it prints at the end.
-
-Then:
-
-```
-brew install hugo
-```
-
-Check it worked:
+To check it's there, open **Terminal** (Cmd + Space, type "Terminal", press
+Enter) and type:
 
 ```
 hugo version
 ```
 
-You should see something starting with `hugo v0.165` or higher.
+If it prints a line starting `hugo v0.165` or higher, you're set. If it says
+"command not found", it isn't installed yet.
 
-### 3. Something to edit text with
+### 3. A Markdown editor
 
-Any editor that shows the file as it really is. Do **not** use Word or Pages —
-they add invisible formatting.
+The pages are written in Markdown — plain text where `**this**` comes out bold
+and `## This` is a heading. A Markdown editor shows you the result as you type
+instead of the asterisks.
 
-- **Visual Studio Code** — <https://code.visualstudio.com>, free. Open the whole
-  `vango` folder with *File → Open Folder* and you get the file tree down the
-  left-hand side. This is the one to pick if you're unsure.
-- **Typora** — <https://typora.io>, small charge. Nicer to look at; shows
-  headings and bold as you type.
+- **Typora** — <https://typora.io>, about €15. The one to get. Text turns
+  bold and headings grow as you type them, and *File → Open Folder* on the
+  `vango` folder gives you the whole site in a sidebar to click through.
+- **iA Writer** — <https://ia.net/writer>, dearer, if you'd rather have
+  something plainer to look at.
+- **MacDown** — <https://macdown.uranusjr.com>, free. Shows the raw text on
+  the left and the result on the right.
 
-You don't need the editor's own preview. The browser window from step 3 is a
-much better preview, and it shows the real page.
+Whichever you pick, keep your hands off the block between the two `---` lines
+at the top of a file. Editors leave it alone; people don't.
+
+Do **not** use Word or Pages — they add invisible formatting that breaks the
+page. And avoid Obsidian for this folder: it rewrites that top block into its
+own format and leaves a settings folder behind in the site.
+
+You don't need the editor's own preview for checking your work. The browser
+window from step 3 of the short version is a far better one, because it's the
+real page.
 
 ### 4. Get the site onto your Mac
 
