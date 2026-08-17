@@ -1,0 +1,91 @@
+# Response headers for Cloudflare Pages.
+#
+# Read by Cloudflare, alongside _redirects, and ignored by every other host —
+# GitHub Pages, which serves the site today, does not look at this file. It is
+# here so that the move to Cloudflare brings the policy with it rather than
+# leaving it as one more thing to remember afterwards.
+#
+# Syntax: a path pattern on its own line, then indented `Name: value` lines.
+# All matching blocks apply; the most specific one wins a name they share.
+
+/*
+  # The site loads nothing it does not serve itself: no analytics, no tag
+  # manager, no font CDN, no embedded widgets. That is worth writing down as
+  # a rule the browser enforces, because it turns any future third-party
+  # script — added deliberately or injected — into a console error instead of
+  # a silent success.
+  #
+  #   'inline-speculation-rules'  the one exception in script-src. It permits
+  #                               <script type="speculationrules"> (see
+  #                               layouts/_default/baseof.html) and nothing
+  #                               else; ordinary inline scripts stay blocked.
+  #                               JSON-LD needs no such keyword — a script
+  #                               with a non-JS type is never executed.
+  #   style-src-attr              one style="" attribute survives, on the room
+  #                               animation layers, and Hugo's youtube
+  #                               shortcode writes its own. Attribute styles
+  #                               are far less dangerous than a stylesheet, so
+  #                               they are allowed on their own directive and
+  #                               style-src stays strict for actual <style>
+  #                               and .css.
+  #   img-src data:               the paper grain in main.css is an inline SVG.
+  #   frame-src                   one embedded video, on the Võnge 2018 event
+  #                               page, pointed at youtube-nocookie.com by
+  #                               [privacy.youtube] in hugo.toml.
+  #   form-action 'none'          there is no form on the site. Booking is a
+  #                               link out to freetobook.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'inline-speculation-rules'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-src https://www.youtube-nocookie.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
+
+  # Send the full URL to ourselves, only the origin to the partner sites and
+  # the booking system linked from the footer.
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Serve every file as the type it was declared, never as what its bytes
+  # look like.
+  X-Content-Type-Options: nosniff
+
+  # Nothing here asks for a camera, a microphone or a location, so nothing
+  # embedded in a page can start asking on the site's behalf.
+  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()
+
+  # Two years, submitted to the preload list, once vango.ee is served from
+  # Cloudflare over HTTPS with no plain-HTTP subdomain left to break.
+  # Uncomment then, not before — this is hard to walk back.
+  # Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+
+# Hugo fingerprints the stylesheet and the script in a production build, so
+# their names change whenever their contents do and a cached copy can never
+# be the wrong one.
+/css/*
+  Cache-Control: public, max-age=31536000, immutable
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Subsetted woff2, and a subset is replaced by editing this list rather than
+# the file — a new face arrives under a new name.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Images are a week, not a year, and deliberately not `immutable`.
+#
+# Most of what is under these two paths is a Hugo derivative carrying a _hu_
+# content hash, which could safely be pinned forever. But not all of it: the
+# room ornaments (34 files, ~190 kB, the dragons and beetles and lotuses) are
+# painted at their natural size and served raw under their own names, and the
+# CSS names several theme PNGs the same way. Re-export one of those and the
+# filename does not change — so a year of `immutable` would leave visitors
+# holding the old one with no way to push the new one out but a domain change.
+#
+# `_headers` has no pattern that can say "only the hashed ones", and relying
+# on which of two overlapping rules Cloudflare considers more specific is not
+# worth the 304 it would save. A week, for everything.
+/img/uploads/*
+  Cache-Control: public, max-age=604800
+/img/theme/*
+  Cache-Control: public, max-age=604800
+
+# The PDFs are replaced in place when the terms change, and a reader holding
+# last season's booking conditions for a year is the one caching mistake here
+# with real-world consequences.
+/docs/*
+  Cache-Control: public, max-age=3600
