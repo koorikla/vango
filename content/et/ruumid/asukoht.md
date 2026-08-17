@@ -1,7 +1,7 @@
 ---
 title: "Imedemaa"
 translationKey: "asukoht"
-slug: "asukoht"
+slug: "imedemaa"
 weight: 10
 hero: "img/uploads/2015-01-4.jpg"
 gallery:

@@ -1,9 +1,19 @@
 {{- $d := index hugo.Data site.Language.Lang "site" -}}
+{{- /* Read the number out of the tel: link rather than out of the prose.
+       The prose is formatted for people ("516 3259 / 506 3365") and differs
+       between languages; the href is already the machine-readable form
+       search engines want, and it cannot drift from what a tap dials. */ -}}
 {{- $tel := "" }}
 {{- range $d.kontakt.columns }}
-  {{- $body := replaceRE "<[^>]+>" "\n" .body }}
-  {{- if findRE "(?i)(telefon|phone)" $body }}{{ $tel = trim (index (findRE "[0-9][0-9 ]{5,}" $body) 0) " " }}{{ end }}
+  {{- with (findRE `tel:\+?[0-9]+` .body 1) }}
+    {{- $tel = replace (index . 0) "tel:" "" }}
+  {{- end }}
 {{- end }}
+
+{{- /* The same picture the share cards use, so a rich result and a Messenger
+       preview show the place the same way. */ -}}
+{{- $siteImg := "" }}
+{{- with $d.meta.ogImage }}{{ with resources.Get . }}{{ $siteImg = .Permalink }}{{ end }}{{ end }}
 
 {{- /* The place itself. Emitted on the home page only — repeating the same
        business on every post would just compete with the post's own markup. */ -}}
@@ -22,20 +32,41 @@
     "addressRegion" "Pärnu maakond"
     "addressCountry" "EE")
   "geo" (dict "@type" "GeoCoordinates" "latitude" 58.131389 "longitude" 24.762500)
+  "hasMap" $d.kontakt.mapUrl
+  "inLanguage" site.Language.Lang
   "sameAs" (slice site.Params.facebook site.Params.instagram) -}}
+{{- with $siteImg }}{{ $place = merge $place (dict "image" .) }}{{ end -}}
 
 {{- /* A post's own markup: an Event carries its dates, everything else is an
        article. Both are what search engines and social cards read. */ -}}
 {{- $img := "" -}}
 {{- with .Resources.GetMatch "{*.jpg,*.jpeg,*.png,*.webp}" }}{{ $img = .Permalink }}{{ end -}}
+{{- with .Params.hero }}{{ with resources.Get . }}{{ $img = .Permalink }}{{ end }}{{ end -}}
 {{- with .Params.cover }}
   {{- with ($.Resources.GetMatch . | default (resources.Get .)) }}{{ $img = .Permalink }}{{ end }}
 {{- end -}}
 
 {{- $data := $place -}}
 {{- if eq .Kind "page" -}}
-  {{- $summary := .Description | default .Params.summary | default (.Summary | plainify | truncate 200) -}}
-  {{- if .Params.eventDate -}}
+  {{- $summary := truncate 200 (partial "summary.html" .) -}}
+  {{- if eq .Section "ruumid" -}}
+    {{- /* A room is a place inside the place, not an article about one.
+           Deliberately plain `Accommodation`: some of these are houses with
+           beds, but others are a meadow, a pond and a garden of sounds, and
+           claiming a bed count for those would be inventing facts. Capacity
+           lives in the prose, where it is written honestly. */ -}}
+    {{- $data = dict
+      "@context" "https://schema.org"
+      "@type" "Accommodation"
+      "name" .Title
+      "description" $summary
+      "url" .Permalink
+      "inLanguage" site.Language.Lang
+      "containedInPlace" (dict
+        "@type" "Campground"
+        "name" site.Title
+        "url" site.Home.Permalink) -}}
+  {{- else if .Params.eventDate -}}
     {{- $start := time.AsTime .Params.eventDate -}}
     {{- $data = dict
       "@context" "https://schema.org"
@@ -75,3 +106,21 @@
 <script type="application/ld+json">
 {{ $data | jsonify (dict "indent" "  ") | safeJS }}
 </script>
+{{- /* The trail a search result shows above its title — Vango › Ruumid ›
+       Kuukoda instead of a bare URL. Only pages that sit under something
+       have one. */ -}}
+{{- if eq .Kind "page" }}
+{{- $crumbs := slice (dict "name" site.Title "url" site.Home.Permalink) }}
+{{- with .Parent }}{{ if not .IsHome }}
+  {{- $crumbs = $crumbs | append (dict "name" .Title "url" .Permalink) }}
+{{- end }}{{ end }}
+{{- $crumbs = $crumbs | append (dict "name" .Title "url" .Permalink) }}
+{{- $items := slice }}
+{{- range $i, $c := $crumbs }}
+  {{- $items = $items | append (dict "@type" "ListItem" "position" (add $i 1) "name" $c.name "item" $c.url) }}
+{{- end }}
+<script type="application/ld+json">
+{{ dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $items
+   | jsonify (dict "indent" "  ") | safeJS }}
+</script>
+{{- end }}

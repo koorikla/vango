@@ -1,7 +1,7 @@
 ---
 title: "Homehouse"
 translationKey: "kodumaja"
-slug: "kodumaja"
+slug: "homehouse"
 weight: 120
 hero: "img/uploads/2015-02-12.jpg"
 gallery:

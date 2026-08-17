@@ -1,0 +1,18 @@
+{{- /* A page's summary as plain text, for meta descriptions, card excerpts
+       and structured data.
+
+       Room texts are a special case. Each was written to run straight on
+       from the room's name — "…on eriti müstiline paik" — because on the
+       one-pager the title sits inline immediately before the sentence. Taken
+       on its own the text is a fragment with no subject, so the name is
+       restored at the front. Without this, a room's search-result snippet
+       and its card both open mid-sentence in lower case.
+
+       Returns a string; the caller decides how far to truncate it. */ -}}
+{{- $s := trim (.Summary | plainify) " \n\t" -}}
+{{- with .Description }}{{ $s = . }}{{ end -}}
+{{- with .Params.summary }}{{ $s = . }}{{ end -}}
+{{- if and (eq .Section "ruumid") (not .Description) (not .Params.summary) -}}
+  {{- if partial "room-needs-name.html" . }}{{ $s = printf "%s %s" .Title $s }}{{ end -}}
+{{- end -}}
+{{- return $s -}}

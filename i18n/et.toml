@@ -100,3 +100,12 @@ other = "Eelmine leht"
 
 [subscribe]
 other = "Telli lugemiseks"
+
+[breadcrumb]
+other = "Asukoht lehel"
+
+[other_rooms]
+other = "Teised paigad"
+
+[see_room]
+other = "Vaata lähemalt"

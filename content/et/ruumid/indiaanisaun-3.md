@@ -1,7 +1,7 @@
 ---
 title: "Imedemaa veesilm"
 translationKey: "indiaanisaun-3"
-slug: "indiaanisaun-3"
+slug: "imedemaa-veesilm"
 weight: 100
 hero: "img/uploads/2015-01-tiigirahvas-scaled-e1620747739787.jpg"
 gallery:

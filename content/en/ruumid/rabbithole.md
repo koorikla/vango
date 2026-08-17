@@ -1,7 +1,7 @@
 ---
 title: "Rabbit Hole Hotel"
 translationKey: "rabbithole"
-slug: "rabbithole"
+slug: "rabbit-hole-hotel"
 weight: 40
 hero: "img/uploads/2015-01-rabbithole_front-scaled.jpg"
 gallery:

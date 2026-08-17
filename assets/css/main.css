@@ -15,8 +15,15 @@
   --ink-soft:   #5f5f5f;
   --ink-strong: #272727;
   --heading:    #414141;
-  --accent:     #f45a4c;
-  --accent-2:   #f5a623;
+  /* The brand coral, deepened. At its original #f45a4c it measured 3.15:1
+     against the paper and 3.27:1 behind white button text — both under the
+     4.5:1 AA needs, and it carries every link, the current-page marker and
+     the booking button. Same hue, darker: links now read 4.77:1 and the
+     button 4.97:1. The original survives as --accent-glow, which only ever
+     tints shadows, where contrast does not apply. */
+  --accent:      #cc3b2c;
+  --accent-glow: 244 90 76;   /* the original coral, for shadows only */
+  --accent-2:    #f5a623;
   --page:       #f7f7f7;
   --sheet:      rgba(255, 255, 255, .95);
   --rule:       rgba(65, 65, 65, .14);
@@ -348,12 +355,12 @@ a { color: inherit; }
   text-decoration: none;
   text-transform: uppercase; letter-spacing: .05em;
   font-size: clamp(.72rem, .68rem + .18vw, .8rem);
-  box-shadow: 0 3px 12px rgb(244 90 76 / .3);
+  box-shadow: 0 3px 12px rgb(var(--accent-glow) / .3);
   transition: background .25s var(--ease), translate .25s var(--ease), box-shadow .25s var(--ease);
 }
 .site-nav__book:hover {
-  opacity: 1; background: #e0483a;
-  translate: 0 -2px; box-shadow: 0 6px 18px rgb(244 90 76 / .4);
+  opacity: 1; background: #b83226;
+  translate: 0 -2px; box-shadow: 0 6px 18px rgb(var(--accent-glow) / .4);
 }
 
 /* Second group: the sections that have their own pages. A hairline keeps
@@ -590,8 +597,65 @@ main {
   font-variation-settings: "SOFT" 30, "WONK" 1, "opsz" 24;
   font-size: var(--step-1); font-weight: 600;
 }
+/* The name is the way through to the room's own page. Underlined only on
+   approach, so the running text keeps reading as a paragraph. */
+.room__title a {
+  text-decoration: none;
+  transition: color .25s var(--ease);
+}
+.room__title a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: .18em; }
 .room__body { display: inline; }
 .room__body > p:first-child { display: inline; }
+
+.room__more { margin: .9rem 0 0; }
+.room__more a {
+  font-size: var(--step--1); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-soft); text-decoration: none;
+  transition: color .25s var(--ease);
+}
+.room__more a:hover { color: var(--accent); }
+
+/* ============================================================
+   A room's own page
+   ============================================================ */
+.crumbs { margin: 0 0 var(--space-s); }
+.crumbs ol {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .5rem;
+  margin: 0; padding: 0; list-style: none;
+  font-size: var(--step--1); color: var(--ink-soft);
+}
+.crumbs li + li::before {
+  content: "›"; margin-right: .5rem; opacity: .55;
+}
+.crumbs a { color: var(--ink-soft); text-decoration: none; }
+.crumbs a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: .18em; }
+.crumbs [aria-current] { color: var(--ink-strong); }
+
+/* Rectangular and full width, unlike the circle on the one-pager: this page
+   exists to show the place properly, not to sit in a decorative column. */
+.room-page__hero {
+  margin: 0 0 var(--space-m);
+  border-radius: var(--radius); overflow: hidden;
+  box-shadow: 0 10px 34px rgb(0 0 0 / .16);
+}
+.room-page__hero img { width: 100%; height: auto; }
+.room-page__hero a { display: block; }
+.room-page__body { max-width: 62ch; margin-inline: auto; }
+.room-page__body .fact {
+  font-weight: 400; color: var(--heading);
+}
+/* Same trick as the one-pager: the name and the opening sentence are one
+   run of text, because the sentence was written without a subject. */
+.room-page__lead-in {
+  color: var(--ink-strong);
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 30, "WONK" 1, "opsz" 24;
+  font-size: var(--step-1); font-weight: 600;
+  margin-right: .4em;
+}
+/* Only when a lead-in is actually present; a room whose text is a
+   whole sentence keeps a normal opening paragraph. */
+.room-page__body--lead-in > p:first-of-type { display: inline; }
 
 /* ============================================================
    Generic bands (food / activities / partners / contact)
@@ -721,7 +785,7 @@ main {
 .card__link:hover .card__media img { scale: 1.05; }
 .card__media-empty {
   display: block; width: 100%; height: 100%;
-  background: linear-gradient(135deg, rgb(245 166 35 / .18), rgb(244 90 76 / .14));
+  background: linear-gradient(135deg, rgb(245 166 35 / .18), rgb(var(--accent-glow) / .14));
 }
 
 .card__body { display: grid; align-content: start; gap: .35rem; padding: var(--space-s); }
@@ -791,11 +855,11 @@ main {
   display: inline-block; padding: .7rem 1.8rem; border-radius: 999px;
   background: var(--accent); color: #fff; text-decoration: none;
   font-size: var(--step--1); letter-spacing: .1em; text-transform: uppercase;
-  box-shadow: 0 3px 12px rgb(244 90 76 / .3);
+  box-shadow: 0 3px 12px rgb(var(--accent-glow) / .3);
   transition: background .25s var(--ease), translate .25s var(--ease), box-shadow .25s var(--ease);
 }
 .cta__book:hover {
-  background: #e0483a; translate: 0 -2px; box-shadow: 0 6px 18px rgb(244 90 76 / .4);
+  background: #b83226; translate: 0 -2px; box-shadow: 0 6px 18px rgb(var(--accent-glow) / .4);
 }
 
 /* Two fixed halves, so a lone "older" card sits in the right half where it
@@ -862,7 +926,10 @@ main {
   z-index: 50; display: grid; place-items: center;
   width: clamp(44px, 8vw, 56px); aspect-ratio: 1;
   border: 0; border-radius: 18px; cursor: pointer;
-  background: var(--accent-2); color: #fff; opacity: .9;
+  /* A white arrow on this amber measured 2.03:1 — under even the 3:1 that
+     an icon needs. Dark ink on the same amber is 7.37:1, so the palette
+     keeps its warmth and the arrow becomes visible. */
+  background: var(--accent-2); color: var(--ink-strong); opacity: .9;
   transition:
     opacity .25s var(--ease),
     translate .25s var(--ease),

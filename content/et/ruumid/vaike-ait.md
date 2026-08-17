@@ -1,7 +1,7 @@
 ---
 title: "Haldja onn"
 translationKey: "vaike-ait"
-slug: "vaike-ait"
+slug: "haldja-onn"
 weight: 50
 hero: "img/uploads/2015-01-haldjaonn-scaled-e1620747451211.jpg"
 gallery:

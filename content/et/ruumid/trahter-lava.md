@@ -1,7 +1,7 @@
 ---
 title: "Heliaed"
 translationKey: "trahter-lava"
-slug: "trahter-lava"
+slug: "heliaed"
 weight: 60
 hero: "img/uploads/2015-01-heliaed-scaled-e1620747557721.jpg"
 gallery:

@@ -1,0 +1,16 @@
+{{ define "main" }}
+{{- /* The hub every room page hangs off. Worth having in its own right —
+       "what can we book?" is a real question — and it gives the twelve room
+       pages a single parent to be crawled from. */ -}}
+<article class="page">
+  <header class="page__head">
+    <h1 class="page-title">{{ .Title }}</h1>
+    {{- with .Description }}<p class="page__lead">{{ . }}</p>{{ end }}
+    {{- with .Content }}<div class="prose band__body">{{ . }}</div>{{ end }}
+  </header>
+
+  {{ partial "card-grid.html" .RegularPages }}
+
+  {{ partial "cta.html" . }}
+</article>
+{{ end }}

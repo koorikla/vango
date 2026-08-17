@@ -1,7 +1,7 @@
 ---
 title: "Wonderland"
 translationKey: "asukoht"
-slug: "asukoht"
+slug: "wonderland"
 weight: 10
 hero: "img/uploads/2015-01-4.jpg"
 gallery:

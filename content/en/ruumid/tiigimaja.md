@@ -1,7 +1,7 @@
 ---
 title: "Moon Chamber"
 translationKey: "tiigimaja"
-slug: "tiigimaja"
+slug: "moon-chamber"
 weight: 30
 hero: "img/uploads/2015-01-kuukoda_fassaad-scaled.jpg"
 gallery:

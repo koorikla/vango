@@ -1,7 +1,7 @@
 ---
 title: "Small Wonderland Lake"
 translationKey: "indiaanisaun-3"
-slug: "indiaanisaun-3"
+slug: "small-wonderland-lake"
 weight: 90
 hero: "img/uploads/2015-01-4.jpg"
 gallery:

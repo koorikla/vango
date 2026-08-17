@@ -73,10 +73,25 @@
     </div>
 
     <div class="room__text">
-      <h3 class="room__title">{{ $p.Title }}</h3>
+      {{- /* The title is the link to the room's own page. It is the strongest
+             internal signal each of those pages gets, and the most obvious
+             place a reader would expect to click. */ -}}
+      <h3 class="room__title"><a href="{{ $p.RelPermalink }}">{{ $p.Title }}</a></h3>
       <div class="room__body prose">{{ partial "richtext.html" $p.Content }}</div>
+      {{- /* The room name is carried in a hidden span rather than on screen:
+             twelve visible "Vaata lähemalt" links would read identically to a
+             screen reader, and twelve labelled ones would clutter the page. */ -}}
+      <p class="room__more">
+        <a href="{{ $p.RelPermalink }}">{{ i18n "see_room" }}<span class="visually-hidden">: {{ $p.Title }}</span> &rarr;</a>
+      </p>
     </div>
   </article>
+  {{- end }}
+
+  {{- with site.GetPage "/ruumid" }}
+  <p class="band__more">
+    <a class="pill" href="{{ .RelPermalink }}">{{ .Title }} &rarr;</a>
+  </p>
   {{- end }}
 </section>
 

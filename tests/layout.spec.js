@@ -88,12 +88,12 @@ test.describe('per-page metadata', () => {
 
   test('a post is marked up as an article, the home page as the place', async ({ page }) => {
     await page.goto('/');
-    const home = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
+    const home = JSON.parse(await page.locator('script[type="application/ld+json"]').first().textContent());
     expect(home['@type']).toBe('Campground');
 
     await page.goto('/uudised/');
     await page.locator('.card__link').first().click();
-    const post = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
+    const post = JSON.parse(await page.locator('script[type="application/ld+json"]').first().textContent());
     expect(post['@type']).toBe('Article');
     expect(post.headline).toBe(await page.locator('h1').innerText());
   });
@@ -101,7 +101,7 @@ test.describe('per-page metadata', () => {
   test('an event carries its date in structured data', async ({ page }) => {
     await page.goto('/sundmused/');
     await page.locator('.card__link').first().click();
-    const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
+    const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').first().textContent());
     expect(ld['@type']).toBe('Event');
     expect(ld.startDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });

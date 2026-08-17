@@ -1,0 +1,21 @@
+{{- /* Does this room's text need its name put in front of it?
+
+       Most room texts were written to run straight on from the title, which
+       sits inline immediately before them on the one-pager: "…on eriti
+       müstiline paik", "…asub järve pervel". On a page of their own, under a
+       heading, those read as fragments.
+
+       Two rooms are not written that way — Imedemaa opens "Endisele
+       metsavahikohale rajatud Imedemaa on eriline paik", a whole sentence —
+       and prepending the name there produces "Imedemaa Endisele
+       metsavahikohale rajatud Imedemaa on…".
+
+       So the test is the text itself, not the room: a body that opens with a
+       lower-case letter is a continuation and needs its subject back. Both
+       halves of the check matter — `lower` alone would also match a digit or
+       a quotation mark, which begin a sentence perfectly well.
+
+       Takes a page, returns a boolean. */ -}}
+{{- $first := substr (trim (.Content | plainify) " \n\t") 0 1 -}}
+{{- $isCasedLetter := ne (lower $first) (upper $first) -}}
+{{- return (and $isCasedLetter (eq $first (lower $first))) -}}

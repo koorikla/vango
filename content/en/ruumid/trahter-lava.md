@@ -1,7 +1,7 @@
 ---
 title: "Garden of Sounds"
 translationKey: "trahter-lava"
-slug: "trahter-lava"
+slug: "garden-of-sounds"
 weight: 80
 hero: "img/uploads/2015-01-heliaed-scaled-e1620747557721.jpg"
 gallery:

@@ -16,6 +16,7 @@ disableKinds = ["taxonomy", "term"]
     # with `slug:` in front matter). Declared for both languages so the two
     # behave identically.
     [languages.et.permalinks.page]
+      ruumid = "/ruumid/:slug/"
       uudised = "/uudised/:slug/"
       sundmused = "/sundmused/:slug/"
       galerii = "/galerii/:slug/"
@@ -33,6 +34,12 @@ disableKinds = ["taxonomy", "term"]
       sundmused = "/events/"
       galerii = "/gallery/"
     [languages.en.permalinks.page]
+      # The section keeps its Estonian name here, unlike the three below.
+      # /en/ruumid/<slug>/ is the path WordPress published and Google indexed;
+      # the slugs within it have been renamed to match each room (with 301s in
+      # static/_redirects), which is the part a reader actually sees. Moving
+      # the section as well would double the redirect churn for no gain.
+      ruumid = "/ruumid/:slug/"
       uudised = "/news/:slug/"
       sundmused = "/events/:slug/"
       galerii = "/gallery/:slug/"
@@ -54,15 +61,18 @@ disableKinds = ["taxonomy", "term"]
   [imaging.webp]
     quality = 80
 
-# Rooms are sections of the one-pager, not standalone pages.
-# They still exist as content files so each room stays a separate,
-# translatable file — they just do not get their own URL.
-[[cascade]]
-  [cascade.target]
-    path = "{/ruumid,/ruumid/**}"
-  [cascade.build]
-    render = "never"   # no standalone URL
-    list = "always"    # but still available to the homepage template
+# Rooms now render their own pages as well as appearing on the one-pager.
+# They previously carried `render = "never"`; each room is a distinct thing
+# with its own name, photographs and capacity, and a page it can be found by
+# is worth more than the tidiness of keeping everything on one URL.
+
+# The fonts are self-hosted rather than pulled from Google, so an embedded
+# video should not quietly undo that. Privacy-enhanced mode points the
+# `youtube` shortcode at youtube-nocookie.com, which sets no tracking cookie
+# until the viewer actually presses play.
+[privacy]
+  [privacy.youtube]
+    privacyEnhanced = true
 
 [params]
   facebook = "https://www.facebook.com/vangoimedemaa"

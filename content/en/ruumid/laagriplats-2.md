@@ -1,7 +1,7 @@
 ---
 title: "Aladdin’s Lea of Wonders"
 translationKey: "laagriplats-2"
-slug: "laagriplats-2"
+slug: "aladdins-lea-of-wonders"
 weight: 110
 hero: "img/uploads/2015-01-DJI_0536-scaled-e1620747320239.jpg"
 animations:

@@ -1,7 +1,7 @@
 ---
 title: "Heart"
 translationKey: "peomaja"
-slug: "peomaja"
+slug: "heart"
 weight: 20
 hero: "img/uploads/2015-01-IMG_2852-scaled-e1620746163719.jpeg"
 gallery:

@@ -100,3 +100,12 @@ other = "Previous page"
 
 [subscribe]
 other = "Subscribe"
+
+[breadcrumb]
+other = "Breadcrumb"
+
+[other_rooms]
+other = "Other places"
+
+[see_room]
+other = "See more"

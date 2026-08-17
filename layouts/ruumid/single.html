@@ -1,0 +1,101 @@
+{{ define "main" }}
+{{- /* A room's own page. It exists so that "Vetevaimu suitsusaun" can be
+       found by name — on the one-pager each room is a paragraph among
+       twelve, which is not a thing a search engine can rank.
+
+       Rooms are not page bundles: their pictures are asset paths in front
+       matter (`hero`, `gallery`), which is why this cannot reuse the
+       default single template. */ -}}
+{{- $section := .Parent -}}
+{{- $gallery := .Params.gallery | default slice -}}
+
+<article class="page room-page">
+  <nav class="crumbs" aria-label="{{ i18n "breadcrumb" }}">
+    <ol>
+      <li><a href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a></li>
+      <li><a href="{{ $section.RelPermalink }}">{{ $section.Title }}</a></li>
+      <li><span aria-current="page">{{ .Title }}</span></li>
+    </ol>
+  </nav>
+
+  <header class="page__head">
+    <h1 class="page-title">{{ .Title }}</h1>
+  </header>
+
+  {{- with .Params.hero }}
+  {{- $hero := resources.Get . }}
+  {{- with $hero }}
+  <figure class="room-page__hero">
+    <a href="{{ (.Resize "1600x webp q82").RelPermalink }}"
+       data-lightbox="room-{{ $.File.ContentBaseName }}" data-caption="{{ $.Title }}">
+      {{ partial "img.html" (dict
+          "src" $.Params.hero
+          "alt" $.Title
+          "sizes" "(max-width: 720px) 92vw, 1000px"
+          "widths" (slice 600 900 1200 1600)
+          "loading" "eager"
+          "fetchpriority" "high") }}
+    </a>
+  </figure>
+  {{- end }}
+  {{- end }}
+
+  {{- /* Every room's text was written to run on from its name — "…on eriti
+         müstiline paik", with no subject of its own, because on the
+         one-pager the title sits inline immediately before it. Left alone
+         under a heading it reads as a fragment, so the name leads the first
+         paragraph here too. It also puts the room's name in the opening
+         sentence, which is where a search engine looks for it. */ -}}
+  <div class="prose room-page__body{{ if partial "room-needs-name.html" . }} room-page__body--lead-in{{ end }}">
+    {{- if partial "room-needs-name.html" . }}
+    <b class="room-page__lead-in">{{ .Title }}</b>
+    {{- end }}
+    {{ partial "richtext.html" .Content }}
+  </div>
+
+  {{- /* The full set of photographs, at a size worth looking at. On the home
+         page these are 34px circles; this is the reason to click through. */ -}}
+  {{- with $gallery }}
+  <h2 class="band__title band__title--sub">{{ i18n "photos" }}</h2>
+  <div class="gallery-grid">
+    {{- range $n, $g := . }}
+    {{- with resources.Get $g }}
+    {{- $full := .Resize "1600x webp q82" }}
+    {{- $thumb := .Fill "800x600 Center webp q80" }}
+    <a class="gallery-grid__item" href="{{ $full.RelPermalink }}"
+       data-lightbox="room-{{ $.File.ContentBaseName }}"
+       data-caption="{{ $.Title }}">
+      <img src="{{ $thumb.RelPermalink }}" width="800" height="600"
+           alt="{{ printf "%s — %s" $.Title (printf (i18n "image_of") (add $n 2) (add (len $gallery) 1)) }}"
+           loading="lazy" decoding="async">
+    </a>
+    {{- end }}
+    {{- end }}
+  </div>
+  {{- end }}
+
+  {{ partial "cta.html" . }}
+
+  {{- /* The neighbouring rooms, so a visitor who landed here from a search
+         has somewhere to go other than back. The three that follow this one
+         in the running order, wrapping round at the end — deterministic, so
+         the build stays reproducible and every room is linked from three
+         others rather than from wherever chance put it. */ -}}
+  {{- $siblings := where site.RegularPages "Section" "ruumid" }}
+  {{- $here := 0 }}
+  {{- range $i, $p := $siblings }}{{ if eq $p.RelPermalink $.RelPermalink }}{{ $here = $i }}{{ end }}{{ end }}
+  {{- $others := slice }}
+  {{- $n := len $siblings }}
+  {{- range $step := seq 1 (math.Min 3 (sub $n 1)) }}
+    {{- $others = $others | append (index $siblings (mod (add $here $step) $n)) }}
+  {{- end }}
+  {{- with $others }}
+  <h2 class="band__title band__title--sub">{{ i18n "other_rooms" }}</h2>
+  {{ partial "card-grid.html" . }}
+  {{- end }}
+
+  <p class="band__more">
+    <a class="pill" href="{{ $section.RelPermalink }}">{{ $section.Title }} &rarr;</a>
+  </p>
+</article>
+{{ end }}

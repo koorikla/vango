@@ -1,9 +1,16 @@
 {{- /* A list of pages as cards. Cover art comes from `cover` in front matter,
-       or failing that the first image resource in the page bundle. */ -}}
+       or a room's `hero`, or failing either the first image resource in the
+       page bundle. Rooms keep their pictures as asset paths rather than as
+       bundle resources, which is why `hero` gets a look-in here. */ -}}
 <ul class="cards">
-  {{- range . }}
+  {{- /* `$p` rather than `$`: this partial is handed a page collection, so
+         `$` is the collection itself and `$.Page` does not exist on it. The
+         bug sat here unnoticed because it only fires once some page in the
+         list actually sets `cover`. */ -}}
+  {{- range $p := . }}
   {{- $cover := "" }}
-  {{- with .Params.cover }}{{ $cover = $.Page.Resources.GetMatch . | default (resources.Get .) }}{{ end }}
+  {{- with .Params.cover }}{{ $cover = $p.Resources.GetMatch . | default (resources.Get .) }}{{ end }}
+  {{- if not $cover }}{{ with .Params.hero }}{{ $cover = resources.Get . }}{{ end }}{{ end }}
   {{- if not $cover }}{{ $cover = .Resources.GetMatch "{*.jpg,*.jpeg,*.png,*.webp}" }}{{ end }}
   <li class="card">
     <a class="card__link" href="{{ .RelPermalink }}">
@@ -25,7 +32,7 @@
         {{- end }}
         <span class="card__title">{{ .Title }}</span>
         {{- with .Params.location }}<span class="card__meta">{{ . }}</span>{{ end }}
-        <span class="card__excerpt">{{ .Summary | plainify | truncate 140 }}</span>
+        <span class="card__excerpt">{{ truncate 140 (partial "summary.html" .) }}</span>
       </span>
     </a>
   </li>

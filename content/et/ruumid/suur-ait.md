@@ -1,7 +1,7 @@
 ---
 title: "Targa Tamme ait"
 translationKey: "suur-ait"
-slug: "suur-ait"
+slug: "targa-tamme-ait"
 weight: 40
 hero: "img/uploads/2015-01-35.jpg"
 gallery:

@@ -1,7 +1,7 @@
 ---
 title: "Rändaja saun"
 translationKey: "saunamaja"
-slug: "saunamaja"
+slug: "randaja-saun"
 weight: 80
 hero: "img/uploads/2015-01-vango_saun_talvel-scaled-e1620746895730.jpg"
 gallery:

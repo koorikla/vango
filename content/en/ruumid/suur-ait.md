@@ -1,7 +1,7 @@
 ---
 title: "Garner of the Smart Oak"
 translationKey: "suur-ait"
-slug: "suur-ait"
+slug: "garner-of-the-smart-oak"
 weight: 100
 hero: "img/uploads/2015-01-35.jpg"
 gallery:

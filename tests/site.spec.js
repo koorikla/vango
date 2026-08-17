@@ -322,6 +322,67 @@ test.describe('responsive + a11y', () => {
       await expect(page.locator(`.site-nav__list a[href="#${id}"]`)).toHaveCount(1);
     }
   });
+
+  /**
+   * Colour contrast, measured against what the browser actually paints.
+   * The accent started at #f45a4c, which put body links at 3.15:1, white
+   * text on the booking button at 3.27:1 and the back-to-top arrow at
+   * 2.03:1 — all below WCAG AA. Anything that carries text has to earn its
+   * colour, so the numbers are asserted rather than eyeballed.
+   */
+  test('text and controls meet WCAG AA contrast', async ({ page }) => {
+    await page.goto('/uudised/');
+
+    const results = await page.evaluate(() => {
+      const lin = (c) => {
+        c /= 255;
+        return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+      };
+      const lum = (css) => {
+        const [r, g, b] = css.match(/[\d.]+/g).map(Number);
+        return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+      };
+      const ratio = (a, b) => {
+        const [x, y] = [lum(a), lum(b)];
+        return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+      };
+      // The sheet the content is printed on. Every transparent background
+      // ultimately resolves to this, so it is the honest backdrop to test
+      // text against.
+      const PAPER = 'rgb(253, 250, 246)';
+
+      const check = (selector, need, label) => {
+        const el = document.querySelector(selector);
+        if (!el) return null;
+        const s = getComputedStyle(el);
+        const bg = s.backgroundColor;
+        const opaque = bg && !/rgba?\([^)]*,\s*0\)/.test(bg) && bg !== 'transparent';
+        return {
+          label: label || selector,
+          ratio: +ratio(s.color, opaque ? bg : PAPER).toFixed(2),
+          need,
+        };
+      };
+
+      return [
+        check('.site-nav__book', 4.5, 'booking button'),
+        check('.site-nav__list [aria-current="page"]', 4.5, 'current nav item'),
+        check('.card__excerpt', 4.5, 'card excerpt'),
+        check('.card__date', 4.5, 'card date'),
+        check('.page__lead', 4.5, 'page lead'),
+        check('.post__back a', 4.5, 'back link'),
+        // an icon only has to reach the 3:1 that graphics need
+        check('.to-top', 3, 'back-to-top arrow'),
+      ].filter(Boolean);
+    });
+
+    expect(results.length, 'found elements to measure').toBeGreaterThan(4);
+    const failures = results.filter((r) => r.ratio < r.need);
+    expect(
+      failures,
+      `below WCAG AA:\n${failures.map((f) => `  ${f.label}: ${f.ratio}:1 (needs ${f.need}:1)`).join('\n')}`
+    ).toEqual([]);
+  });
 });
 
 test.describe('deployment artefacts', () => {
@@ -346,6 +407,12 @@ test.describe('deployment artefacts', () => {
   test('redirects file ships with the build', async ({ request }) => {
     const res = await request.get('/_redirects');
     expect(res.ok()).toBeTruthy();
-    expect(await res.text()).toContain('/ruumid/peomaja');
+    const body = await res.text();
+    // This used to look for a room rule. Rooms have pages of their own now,
+    // so those rules are gone by design — a rule for /ruumid/<slug> would
+    // shadow the page it points at (tests/rooms.spec.js guards that). The
+    // WordPress leftovers are the stable thing to sample instead.
+    expect(body).toContain('/wp-admin/');
+    expect(body).toContain('/docs/broneerimistingimused.pdf');
   });
 });

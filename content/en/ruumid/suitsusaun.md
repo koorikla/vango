@@ -1,7 +1,7 @@
 ---
 title: "Water Guardian’s Smoke Sauna"
 translationKey: "suitsusaun"
-slug: "suitsusaun"
+slug: "water-guardians-smoke-sauna"
 weight: 70
 hero: "img/uploads/2015-01-sauna-vango-visit-estonia-scaled-e1620745464432.jpg"
 gallery:

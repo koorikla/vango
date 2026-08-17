@@ -1,7 +1,7 @@
 ---
 title: "Journeyer’s Sauna"
 translationKey: "saunamaja"
-slug: "saunamaja"
+slug: "journeyers-sauna"
 weight: 60
 hero: "img/uploads/2015-01-vango_saun_talvel-scaled-e1620746895730.jpg"
 gallery:

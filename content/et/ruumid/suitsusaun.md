@@ -1,7 +1,7 @@
 ---
 title: "Vetevaimu suitsusaun"
 translationKey: "suitsusaun"
-slug: "suitsusaun"
+slug: "vetevaimu-suitsusaun"
 weight: 90
 hero: "img/uploads/2015-01-sauna-vango-visit-estonia-scaled-e1620745464432.jpg"
 gallery:

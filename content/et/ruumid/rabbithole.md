@@ -1,7 +1,7 @@
 ---
 title: "Jäneseuru hotell"
 translationKey: "rabbithole"
-slug: "rabbithole"
+slug: "janeseuru-hotell"
 weight: 70
 hero: "img/uploads/2015-01-rabbithole_front-scaled.jpg"
 gallery:

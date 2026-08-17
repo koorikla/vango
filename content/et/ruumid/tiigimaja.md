@@ -1,7 +1,7 @@
 ---
 title: "Kuukoda"
 translationKey: "tiigimaja"
-slug: "tiigimaja"
+slug: "kuukoda"
 weight: 30
 hero: "img/uploads/2015-01-kuukoda_fassaad-scaled.jpg"
 gallery:

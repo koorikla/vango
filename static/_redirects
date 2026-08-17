@@ -1,26 +1,43 @@
 # Cloudflare Pages redirects — keep old WordPress URLs alive.
-# The site is a one-pager, so deep links land on the matching anchor.
+# Sections that live only on the one-pager land on the matching anchor;
+# rooms have pages of their own, at renamed URLs, so their old paths are
+# forwarded to the new ones.
 
-# Rooms (Estonian)
-/ruumid/asukoht          /#asukoht          301
-/ruumid/peomaja          /#peomaja          301
-/ruumid/tiigimaja        /#tiigimaja        301
-/ruumid/suur-ait         /#suur-ait         301
-/ruumid/vaike-ait        /#vaike-ait        301
-/ruumid/trahter-lava     /#trahter-lava     301
-/ruumid/rabbithole       /#rabbithole       301
-/ruumid/saunamaja        /#saunamaja        301
-/ruumid/saunamaja-2      /#saunamaja        301
-/ruumid/suitsusaun       /#suitsusaun       301
-/ruumid/indiaanisaun-3   /#indiaanisaun-3   301
-/ruumid/laagriplats-2    /#laagriplats-2    301
-/ruumid/kodumaja         /#kodumaja         301
-/ruumid/*                /#ruumid           301
-
-# Rooms (English)
-/en/ruumid/saunamaja-2   /en/#saunamaja     301
-/en/ruumid/:slug         /en/#:slug         301
-/en/ruumid/*             /en/#ruumid        301
+# Rooms
+# Each room now lives at a URL that says its name. WordPress had
+# published them under slugs that often described something else
+# entirely — Kuukoda at "tiigimaja", Imedemaa veesilm at
+# "indiaanisaun-3" — and those old URLs are indexed, so every one of
+# them is redirected rather than dropped. A 301 carries the ranking
+# across; deleting the URL would not.
+#   Estonian
+/ruumid/asukoht                          /ruumid/imedemaa                             301
+/ruumid/indiaanisaun-3                   /ruumid/imedemaa-veesilm                     301
+/ruumid/laagriplats-2                    /ruumid/aladini-imeaas                       301
+/ruumid/peomaja                          /ruumid/kabi                                 301
+/ruumid/rabbithole                       /ruumid/janeseuru-hotell                     301
+/ruumid/saunamaja                        /ruumid/randaja-saun                         301
+/ruumid/suitsusaun                       /ruumid/vetevaimu-suitsusaun                 301
+/ruumid/suur-ait                         /ruumid/targa-tamme-ait                      301
+/ruumid/tiigimaja                        /ruumid/kuukoda                              301
+/ruumid/trahter-lava                     /ruumid/heliaed                              301
+/ruumid/vaike-ait                        /ruumid/haldja-onn                           301
+#   English
+/en/ruumid/asukoht                       /en/ruumid/wonderland                        301
+/en/ruumid/indiaanisaun-3                /en/ruumid/small-wonderland-lake             301
+/en/ruumid/kodumaja                      /en/ruumid/homehouse                         301
+/en/ruumid/laagriplats-2                 /en/ruumid/aladdins-lea-of-wonders           301
+/en/ruumid/peomaja                       /en/ruumid/heart                             301
+/en/ruumid/rabbithole                    /en/ruumid/rabbit-hole-hotel                 301
+/en/ruumid/saunamaja                     /en/ruumid/journeyers-sauna                  301
+/en/ruumid/suitsusaun                    /en/ruumid/water-guardians-smoke-sauna       301
+/en/ruumid/suur-ait                      /en/ruumid/garner-of-the-smart-oak           301
+/en/ruumid/tiigimaja                     /en/ruumid/moon-chamber                      301
+/en/ruumid/trahter-lava                  /en/ruumid/garden-of-sounds                  301
+/en/ruumid/vaike-ait                     /en/ruumid/fairy-hut                         301
+# WordPress de-duplicated the English sauna slug.
+/en/ruumid/saunamaja-2                   /en/ruumid/journeyers-sauna                  301
+/ruumid/saunamaja-2                      /ruumid/randaja-saun                         301
 
 # Other custom post types
 /toitlustus/*            /#toitlustus       301
